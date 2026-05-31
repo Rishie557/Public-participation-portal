@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sauti ya Wananchi — Kenya Civic Democracy Platform</title>
+  <meta name="description" content="A citizen-driven platform to vote on tax policies before they become law, track public spending, and report corruption." />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">SW</div>
+    <span class="nav-brand">Sauti ya <span>Wananchi</span></span>
+  </div>
+  <div class="nav-links">
+    <a href="#vote">Vote</a>
+    <a href="#dashboard">Transparency</a>
+    <a href="#report">Report</a>
+    <a href="#advocacy">Advocacy</a>
+    <a href="#vote" class="nav-cta">Cast Your Vote</a>
+  </div>
+</nav>
+
+<section id="hero">
+  <div class="alert-bar">
+    <span class="alert-bar-badge">Active</span>
+    <span class="alert-bar-text">Finance Bill 2026 — public participation is open.</span>
+  </div>
+  <div class="hero-content">
+    <div class="hero-tag">Kenya Civic Democracy Platform</div>
+    <h1 class="hero-title">
+      Your voice.<br>
+      Your <span class="accent">taxes.</span><br>
+      Your <span class="red-accent">Kenya.</span>
+    </h1>
+    <p class="hero-sub">A citizen-driven platform for public participation, transparency, and accountability.</p>
+    <a href="https://mwangocapital.com/wp-content/uploads/2026/05/Finance-Bill-2026.pdf" 
+   target="_blank" 
+   class="btn-secondary">
+   📄 Read Finance Bill 2026
+</a>
+    <div class="hero-actions">
+      <a href="#vote" class="btn-primary">Vote on Finance Bill 2026 →</a>
+      <a href="#dashboard" class="btn-secondary">View Tax Dashboard</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num">847K</div>
+        <div class="hero-stat-label">Citizens voted this month</div>
+      </div>
+      <div>
+        <div class="hero-stat-num red">23</div>
+        <div class="hero-stat-label">Active policy votes open</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">KSh 4.2B</div>
+        <div class="hero-stat-label">Corruption flagged this year</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="vote">
+  <div class="section-wrapper">
+    <div class="section-eyebrow">Citizen Voting</div>
+    <h2 class="section-title">Active Policy Votes</h2>
+    <p class="section-sub">Cast your vote on proposed laws before they pass.</p>
+
+    <div class="vote-grid">
+      <div class="vote-card">
+        <div class="vote-card-header">
+          <div class="vote-card-meta">
+            <div class="vote-badge badge-urgent">Urgent — 12 days left</div>
+            <div class="vote-card-title">Mobile Money Excise Duty Increase</div>
+            <div class="vote-card-desc">Proposed increase in excise duty on mobile transactions.</div>
+          </div>
+          <div class="vote-impact">
+            <div class="impact-label">Tax increase</div>
+            <div class="impact-val negative">+150%</div>
+          </div>
+        </div>
+        <div class="vote-card-body">
+          <div class="vote-bar-row">
+            <span class="vote-bar-label yes">Approve</span>
+            <div class="vote-bar-track"><div class="vote-bar-fill fill-yes" style="width:19%"></div></div>
+            <span class="vote-bar-pct">19%</span>
+          </div>
+          <div class="vote-bar-row">
+            <span class="vote-bar-label no">Reject</span>
+            <div class="vote-bar-track"><div class="vote-bar-fill fill-no" style="width:70%"></div></div>
+            <span class="vote-bar-pct">70%</span>
+          </div>
+        </div>
+        <div class="vote-card-footer">
+          <span class="vote-count"><strong>312,847</strong> votes cast</span>
+          <div class="vote-btns">
+            <button class="btn-vote btn-vote-yes" onclick="castVote(this,'yes','mobile-tax')">Approve</button>
+            <button class="btn-vote btn-vote-no" onclick="castVote(this,'no','mobile-tax')">Reject</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="dashboard">
+  <div class="section-wrapper">
+    <div class="section-eyebrow">Tax Transparency</div>
+    <h2 class="section-title">Where Your Taxes Go</h2>
+    <p class="section-sub">Real-time budget allocation tracking.</p>
+
+    <div class="dashboard-grid">
+      <div class="dash-card">
+        <div class="dash-card-title">Budget allocation — FY 2025/26</div>
+        <div class="budget-donut-row">
+          <div class="donut-wrap">
+            <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#f4f4f0" stroke-width="25"/>
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#006600" stroke-width="25" stroke-dasharray="98.54 228.13" stroke-dashoffset="0" transform="rotate(-90 70 70)"/>
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#bb0000" stroke-width="25" stroke-dasharray="68.44 258.23" stroke-dashoffset="-98.54" transform="rotate(-90 70 70)"/>
+            </svg>
+            <div class="donut-center">
+              <span class="donut-total">KSh 4.3T</span>
+              <span class="donut-sub">Total budget</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="report">
+  <div class="section-wrapper">
+    <div class="section-eyebrow">Whistleblower System</div>
+    <h2 class="section-title">Report Corruption</h2>
+    <p class="section-sub">Submit evidence of misappropriated funds or misconduct.</p>
+
+    <div class="report-form">
+  <div class="form-row">
+    <label class="form-label">Ministry or Department</label>
+    <select class="form-input form-select" id="ministry-select">
+      <option value="">Select ministry or department...</option>
+      <optgroup label="Ministries">
+        <option>Ministry of Agriculture & Livestock Development</option>
+        <option>Ministry of Blue Economy & Fisheries</option>
+        <option>Ministry of Co-operatives & MSMEs</option>
+        <option>Ministry of Defence</option>
+        <option>Ministry of Education</option>
+        <option>Ministry of Energy & Petroleum</option>
+        <option>Ministry of Environment, Climate & Forestry</option>
+        <option>Ministry of Foreign & Diaspora Affairs</option>
+        <option>Ministry of Gender, Culture & Social Services</option>
+        <option>Ministry of Health</option>
+        <option>Ministry of Home Affairs & National Administration</option>
+        <option>Ministry of Housing & Urban Development</option>
+        <option>Ministry of ICT & Digital Economy</option>
+        <option>Ministry of Investments, Trade & Industry</option>
+        <option>Ministry of Justice & Legal Affairs</option>
+        <option>Ministry of Labour & Social Protection</option>
+        <option>Ministry of Lands, Public Works & Housing</option>
+        <option>Ministry of Mining, Blue Economy & Maritime</option>
+        <option>Ministry of National Treasury & Economic Planning</option>
+        <option>Ministry of Public Service & Human Capital</option>
+        <option>Ministry of Roads & Transport</option>
+        <option>Ministry of Tourism, Wildlife & Heritage</option>
+        <option>Ministry of Water, Sanitation & Irrigation</option>
+        <option>Ministry of Youth Affairs & Sports</option>
+      </optgroup>
+      <optgroup label="Independent Agencies">
+        <option>Kenya Revenue Authority (KRA)</option>
+        <option>Ethics & Anti-Corruption Commission (EACC)</option>
+        <option>Director of Criminal Investigations (DCI)</option>
+        <option>National Intelligence Service (NIS)</option>
+        <option>Kenya National Audit Office (KENAO)</option>
+        <option>National Hospital Insurance Fund (NHIF / SHA)</option>
+        <option>National Social Security Fund (NSSF)</option>
+        <option>Kenya National Highways Authority (KeNHA)</option>
+      </optgroup>
+      <optgroup label="Other">
+        <option>County Government</option>
+        <option>Parliament / National Assembly</option>
+        <option>Judiciary</option>
+        <option>Other</option>
+      </optgroup>
+    </select>
+  </div>
+
+      <div class="form-row">
+        <label class="form-label">Description</label>
+        <textarea class="form-input form-textarea" id="report-desc" placeholder="Describe what you witnessed..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Severity</label>
+        <div class="severity-row">
+          <button class="severity-btn active" onclick="setSeverity(this)">Low</button>
+          <button class="severity-btn" onclick="setSeverity(this)">Medium</button>
+          <button class="severity-btn" onclick="setSeverity(this)">High</button>
+          <button class="severity-btn" onclick="setSeverity(this)">Critical</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="anon-toggle" onclick="toggleAnon()">
+          <div class="toggle-track on" id="anon-track"><div class="toggle-thumb"></div></div>
+          <span class="anon-label" id="anon-label">Submit anonymously</span>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="submitReport()">Submit Report Securely →</button>
+    </div>
+  </div>
+</section>
+
+<section id="advocacy">
+  <div class="section-wrapper">
+    <div class="section-eyebrow">Policy Advocacy</div>
+    <h2 class="section-title">Turning Votes into Policy</h2>
+    <p class="section-sub">Every vote you cast becomes part of a formal citizen submission.</p>
+
+    <div class="advocacy-grid">
+      <div class="advocacy-card"><div class="advocacy-icon">✅</div><h3>Citizens Vote</h3><p>You vote on proposed laws before they pass.</p></div>
+      <div class="advocacy-card"><div class="advocacy-icon">📊</div><h3>Data Aggregated</h3><p>Results are compiled into formal reports.</p></div>
+      <div class="advocacy-card"><div class="advocacy-icon">🏛️</div><h3>Submitted to Parliament</h3><p>Reports are delivered to oversight bodies.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">Sauti ya <span>Wananchi</span></div>
+      <div class="footer-tagline">A citizen-driven platform for democratic tax policy, transparency, and accountability.</div>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
+</body>
+</html>

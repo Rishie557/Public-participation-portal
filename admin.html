@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — Sauti ya Wananchi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Sauti ya <span>Wananchi</span></div>
+    <div class="login-sub">Admin Panel — restricted access</div>
+    <label class="login-label">Username</label>
+    <input class="login-input" type="text" id="login-user" placeholder="admin" />
+    <label class="login-label">Password</label>
+    <input class="login-input" type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-error" id="login-error">Incorrect username or password.</div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+  <nav class="admin-nav">
+    <div class="admin-nav-logo">Sauti ya <span>Wananchi</span> — Admin</div>
+    <div class="admin-nav-right">
+      <span class="admin-badge">🔒 Admin</span>
+      <a href="index.html" style="font-size:13px;color:#888;text-decoration:none">← Back to site</a>
+      <button class="logout-btn" onclick="doLogout()">Log out</button>
+    </div>
+  </nav>
+
+  <div class="admin-body">
+
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Reports</div>
+        <div class="kpi-val green" id="kpi-total">—</div>
+        <div class="kpi-sub">All time submissions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Critical / High</div>
+        <div class="kpi-val red" id="kpi-critical">—</div>
+        <div class="kpi-sub">Urgent reports</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Anonymous</div>
+        <div class="kpi-val gold" id="kpi-anon">—</div>
+        <div class="kpi-sub">Anonymous submissions</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Today</div>
+        <div class="kpi-val" id="kpi-today">—</div>
+        <div class="kpi-sub">Reports today</div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <span class="section-title">Corruption Reports</span>
+        <select class="filter-select" id="filter-severity" onchange="applyFilters()">
+          <option value="">All severities</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+          <option value="Critical">Critical</option>
+        </select>
+        <select class="filter-select" id="filter-anon" onchange="applyFilters()">
+          <option value="">All submissions</option>
+          <option value="true">Anonymous only</option>
+          <option value="false">Named only</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:0.75rem;align-items:center">
+        <input class="search-input" type="text" id="search-input" placeholder="Search ministry..." oninput="applyFilters()" />
+        <button class="refresh-btn" onclick="loadReports()">↻ Refresh</button>
+        <button class="export-btn" onclick="exportCSV()">↓ Export CSV</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Ministry</th>
+            <th>Description</th>
+            <th>Severity</th>
+            <th>Submission</th>
+            <th>Date & Time</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="reports-tbody">
+          <tr><td colspan="7"><div class="loading">Loading reports...</div></td></tr>
+        </tbody>
+      </table>
+      <div class="pagination" id="pagination" style="display:none">
+        <span id="pagination-info"></span>
+        <div class="page-btns" id="page-btns"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="admin.js"></script>
+</body>
+</html>
