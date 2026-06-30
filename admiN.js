@@ -1,6 +1,6 @@
 // ── AUTH ──────────────────────────────────────────────────
 const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'sauti2026'; // ← change this to your own password
+const ADMIN_PASS = 'sauti2026';
 
 function doLogin() {
   const u = document.getElementById('login-user').value.trim();
@@ -20,7 +20,6 @@ function doLogout() {
   location.reload();
 }
 
-// auto-login if session exists
 if (sessionStorage.getItem('admin_auth') === 'true') {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('admin-panel').style.display = 'block';
@@ -61,12 +60,10 @@ function updateKPIs() {
 // ── FILTERS ───────────────────────────────────────────────
 function applyFilters() {
   const search = document.getElementById('search-input')?.value.toLowerCase() || '';
-
   filtered = allReports.filter(r => {
     if (search && !r.description?.toLowerCase().includes(search)) return false;
     return true;
   });
-
   currentPage = 1;
   renderTable();
 }
@@ -141,7 +138,6 @@ function goPage(p) {
 // ── DELETE ────────────────────────────────────────────────
 async function deleteReport(id) {
   if (!confirm('Delete this comment permanently?')) return;
-
   try {
     const res = await fetch('delete_report.php', {
       method: 'POST',
@@ -150,7 +146,6 @@ async function deleteReport(id) {
     });
     const result = await res.json();
     if (!res.ok || result.error) throw new Error(result.error || 'Delete failed');
-
     showToast('Comment deleted.');
     allReports = allReports.filter(r => r.id !== id);
     updateKPIs();
@@ -188,5 +183,4 @@ function showToast(msg, isError = false) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// load on start if already authenticated
 if (sessionStorage.getItem('admin_auth') === 'true') loadReports();

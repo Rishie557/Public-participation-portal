@@ -1,9 +1,3 @@
-const { createClient } = supabase;
-const db = createClient(
-  'https://pktxbzbgaeqkyflvkbvj.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdHhiemJnYWVxa3lmbHZrYnZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTk2MzEsImV4cCI6MjA5NTc3NTYzMX0.mlLWsiyD7J9UVJYn2UgIqT1onTwlOmM03tJANN4nv30'
-);
-
 const votedOn = {};
 
 function showToast(msg, isError = false) {
@@ -34,48 +28,31 @@ function castVote(btn, vote, id) {
   countEl.textContent = (cur + 1).toLocaleString();
 }
 
-function setSeverity(btn) {
-  document.querySelectorAll('.severity-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-function toggleAnon() {
-  const track = document.getElementById('anon-track');
-  const label = document.getElementById('anon-label');
-  track.classList.toggle('on');
-  label.textContent = track.classList.contains('on')
-    ? 'Submit anonymously (recommended)'
-    : 'Submit with my name (contact me for follow-up)';
-}
-
 async function submitReport() {
-  const ministry = document.getElementById('ministry-select').value;
   const desc = document.getElementById('report-desc').value.trim();
-  const severity = document.querySelector('.severity-btn.active')?.textContent || 'Low';
-  const anonymous = document.getElementById('anon-track').classList.contains('on');
 
-  if (!ministry) { showToast('Please select a ministry.', true); return; }
-  if (!desc || desc.length < 20) { showToast('Please provide more detail (min. 20 characters).', true); return; }
-
-  const { error } = await db.from('reports').insert([{
-    ministry,
-    description: desc,
-    severity,
-    anonymous
-  }]);
-
-  console.log('Supabase response:', error);
-
-  if (error) {
-    showToast('Submission failed. Please try again.', true);
-    console.error('Full error:', error);
+  if (!desc || desc.length < 20) {
+    showToast('Please share more detail (min. 20 characters).', true);
     return;
   }
 
-  showToast('🔒 Report submitted. Reference #KE-' + Math.random().toString(36).substr(2, 8).toUpperCase());
-  document.getElementById('ministry-select').value = '';
-  document.getElementById('report-desc').value = '';
+  try {
+    const res = await fetch('submit_report.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ description: desc })
+    });
+    const result = await res.json();
+    if (!res.ok || result.error) throw new Error(result.error || 'Submission failed');
+
+    showToast('✓ Comment submitted. Reference #KE-' + Math.random().toString(36).substr(2, 8).toUpperCase());
+    document.getElementById('report-desc').value = '';
+  } catch (err) {
+    showToast('Submission failed. Please try again.', true);
+    console.error('Error:', err);
+  }
 }
+
 function pwShowTab(btn, panelId) {
   document.querySelectorAll('.pw-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.pw-panel').forEach(p => p.classList.remove('active'));
