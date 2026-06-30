@@ -1,0 +1,382 @@
+<link rel="stylesheet" href="style.css">
+<!-- ══════════════════════════════════════════
+     DASHBOARD SECTION — FY 2025/26
+══════════════════════════════════════════ -->
+<section id="dashboard">
+  <div class="section-wrapper">
+
+    <div class="section-eyebrow">Tax Transparency Dashboard</div>
+    <h2 class="section-title">Track Public Spending</h2>
+    <p class="section-sub">Budget allocations, constituency development funds, and government expenditure — FY 2025/26.</p>
+
+    <!-- ── BUDGET SUMMARY METRICS ── -->
+    <div class="pw-metrics" style="margin-bottom:2.5rem;">
+      <div class="pw-metric">
+        <div class="pw-metric-label">Total Budget</div>
+        <div class="pw-metric-val" style="font-size:22px;">KSh 4.3T</div>
+      </div>
+      <div class="pw-metric">
+        <div class="pw-metric-label">Recurrent Expenditure</div>
+        <div class="pw-metric-val" style="font-size:22px;">KSh 3.13T</div>
+      </div>
+      <div class="pw-metric">
+        <div class="pw-metric-label">Development Expenditure</div>
+        <div class="pw-metric-val green" style="font-size:22px;">KSh 693B</div>
+      </div>
+      <div class="pw-metric">
+        <div class="pw-metric-label">County Transfers</div>
+        <div class="pw-metric-val gold" style="font-size:22px;">KSh 475B</div>
+      </div>
+      <div class="pw-metric">
+        <div class="pw-metric-label">Fiscal Deficit</div>
+        <div class="pw-metric-val red" style="font-size:22px;">KSh 923B</div>
+      </div>
+    </div>
+
+    <!-- ── CDF SPENDING ── -->
+    <div id="cdf-panel">
+
+      <h3 style="margin-bottom:0.5rem;">NG-CDF Spending — FY 2025/26</h3>
+      <p style="font-size:13px;color:var(--gray);margin-bottom:1.25rem;">
+        Total NG-CDF pool: <strong>KSh 55.9B</strong> across 290 constituencies — up from KSh 51.8B in 2024/25.
+        Top tier (populous, 7 constituencies): <strong>KSh 221.5M</strong> each.
+        Full data at <a href="https://ngcdf.go.ke/allocations/" target="_blank" style="color:var(--green);font-weight:600;">ngcdf.go.ke</a>.
+      </p>
+
+      <div class="pw-cdf-table">
+        <div class="pw-cdf-header">
+          <span>Constituency</span>
+          <span>Allocation</span>
+          <span>Tier</span>
+        </div>
+
+        <!-- TOP TIER — KSh 221.5M -->
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Kinangop</div>
+            <div class="pw-cdf-county">Nyandarua County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 221.5M</div>
+          <div class="pw-cdf-util util-high">Top tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Kieni</div>
+            <div class="pw-cdf-county">Nyeri County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 221.5M</div>
+          <div class="pw-cdf-util util-high">Top tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Mwea</div>
+            <div class="pw-cdf-county">Kirinyaga County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 221.5M</div>
+          <div class="pw-cdf-util util-high">Top tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Ruiru</div>
+            <div class="pw-cdf-county">Kiambu County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 221.5M</div>
+          <div class="pw-cdf-util util-high">Top tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Naivasha</div>
+            <div class="pw-cdf-county">Nakuru County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 221.5M</div>
+          <div class="pw-cdf-util util-high">Top tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Bobasi</div>
+            <div class="pw-cdf-county">Kisii County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 221.5M</div>
+          <div class="pw-cdf-util util-high">Top tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Kanduyi</div>
+            <div class="pw-cdf-county">Bungoma County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 221.5M</div>
+          <div class="pw-cdf-util util-high">Top tier</div>
+        </div>
+
+        <!-- MID TIER — KSh ~200M (populous western & rift) -->
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Mt. Elgon</div>
+            <div class="pw-cdf-county">Bungoma County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 188.4M</div>
+          <div class="pw-cdf-util util-mid">2nd tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Malava</div>
+            <div class="pw-cdf-county">Kakamega County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 188.4M</div>
+          <div class="pw-cdf-util util-mid">2nd tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Karachuonyo</div>
+            <div class="pw-cdf-county">Homa Bay County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 188.4M</div>
+          <div class="pw-cdf-util util-mid">2nd tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Molo</div>
+            <div class="pw-cdf-county">Nakuru County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 188.4M</div>
+          <div class="pw-cdf-util util-mid">2nd tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Garissa Township</div>
+            <div class="pw-cdf-county">Garissa County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 188.4M</div>
+          <div class="pw-cdf-util util-mid">2nd tier</div>
+        </div>
+
+        <!-- LOW TIER — small ward-count constituencies -->
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Mumias East</div>
+            <div class="pw-cdf-county">Kakamega County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 173.2M</div>
+          <div class="pw-cdf-util util-low">Low tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Subukia</div>
+            <div class="pw-cdf-county">Nakuru County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 173.2M</div>
+          <div class="pw-cdf-util util-low">Low tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Tetu</div>
+            <div class="pw-cdf-county">Nyeri County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 173.2M</div>
+          <div class="pw-cdf-util util-low">Low tier</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Lamu West</div>
+            <div class="pw-cdf-county">Lamu County</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 192.6M</div>
+          <div class="pw-cdf-util util-low">Low tier</div>
+        </div>
+
+      </div><!-- /pw-cdf-table -->
+
+      <div class="pw-notice">
+        ℹ️ NG-CDF total grew by KSh 4.1B from FY 2024/25 to KSh 55.9B in FY 2025/26. 75% shared equally, 25% by ward count.
+        Nairobi County (16 constituencies) received highest county total at KSh 3.3B. Isiolo &amp; Lamu lowest at KSh 385.2M each.
+        Note: A 2024 High Court ruling declared NG-CDF unconstitutional; MPs have until June 2026 to complete pending projects.
+        Full data at <a href="https://ngcdf.go.ke/allocations/" target="_blank">ngcdf.go.ke</a> and
+        <a href="https://kenyadebtclock.com/cdf" target="_blank">kenyadebtclock.com/cdf</a>.
+      </div>
+
+    </div><!-- /cdf-panel -->
+
+    <!-- ── DONUT CHARTS ── -->
+    <div class="dashboard-grid" style="margin-top:2.5rem;">
+
+      <!-- LEFT: Budget Allocation Donut -->
+      <div class="dash-card">
+        <div class="dash-card-title">Budget Allocation by Category — FY 2025/26</div>
+        <div class="budget-donut-row">
+          <div class="donut-wrap">
+            <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#f4f4f0" stroke-width="25"/>
+              <!-- Recurrent 73% → 0.73 × 326.7 = 238 -->
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#006600" stroke-width="25"
+                stroke-dasharray="238 89" stroke-dashoffset="0" transform="rotate(-90 70 70)"/>
+              <!-- Development 16% → 0.16 × 326.7 = 52 -->
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#bb0000" stroke-width="25"
+                stroke-dasharray="52 275" stroke-dashoffset="-238" transform="rotate(-90 70 70)"/>
+              <!-- Counties 11% → 0.11 × 326.7 = 36 -->
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#d4af37" stroke-width="25"
+                stroke-dasharray="36 291" stroke-dashoffset="-290" transform="rotate(-90 70 70)"/>
+            </svg>
+            <div class="donut-center">
+              <span class="donut-total">KSh 4.3T</span>
+              <span class="donut-sub">FY 2025/26</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:1rem;display:flex;flex-direction:column;gap:6px;font-size:13px;">
+          <p>🟢 Recurrent expenditure — 73% (KSh 3.13T)</p>
+          <p>🔴 Development expenditure — 16% (KSh 693B)</p>
+          <p>🟡 County transfers — 11% (KSh 475B)</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: Sector Spending Donut -->
+      <div class="dash-card">
+        <div class="dash-card-title">Key Sector Allocations — FY 2025/26</div>
+        <div class="budget-donut-row">
+          <div class="donut-wrap">
+            <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#f4f4f0" stroke-width="25"/>
+              <!-- Education 702B — largest; as % of 702+217+276+138+58 ≈ 1391 → 50% -->
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#4a90d9" stroke-width="25"
+                stroke-dasharray="163 164" stroke-dashoffset="0" transform="rotate(-90 70 70)"/>
+              <!-- Security 276B → 20% -->
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#bb0000" stroke-width="25"
+                stroke-dasharray="64 263" stroke-dashoffset="-163" transform="rotate(-90 70 70)"/>
+              <!-- Infrastructure 217B → 16% -->
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#006600" stroke-width="25"
+                stroke-dasharray="51 276" stroke-dashoffset="-227" transform="rotate(-90 70 70)"/>
+              <!-- Health 138B → 10% -->
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#d4af37" stroke-width="25"
+                stroke-dasharray="32 295" stroke-dashoffset="-278" transform="rotate(-90 70 70)"/>
+              <!-- NG-CDF 58B → 4% -->
+              <circle cx="70" cy="70" r="52" fill="none" stroke="#888" stroke-width="25"
+                stroke-dasharray="13 314" stroke-dashoffset="-310" transform="rotate(-90 70 70)"/>
+            </svg>
+            <div class="donut-center">
+              <span class="donut-total">Sectors</span>
+              <span class="donut-sub">KSh billions</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:1rem;display:flex;flex-direction:column;gap:6px;font-size:13px;">
+          <p style="color:#4a90d9;">🔵 Education — KSh 702.7B (largest)</p>
+          <p>🔴 Security (Police, Defence, NIS) — KSh 276.65B</p>
+          <p>🟢 Infrastructure (roads + rail) — KSh 217.3B</p>
+          <p>🟡 Health (incl. UHC, referral hospitals) — KSh 138.1B</p>
+          <p style="color:#888;">⚫ NG-CDF — KSh 58B</p>
+          <p style="color:#888;">   ICT &amp; Digital Economy — KSh 12.7B</p>
+        </div>
+      </div>
+
+    </div><!-- /dashboard-grid -->
+
+    <!-- ── SECTOR DETAIL BREAKDOWN ── -->
+    <div style="margin-top:2rem;">
+      <h3 style="margin-bottom:1rem;font-family:'Playfair Display',serif;">Sector Detail — FY 2025/26</h3>
+
+      <div class="pw-cdf-table">
+        <div class="pw-cdf-header">
+          <span>Sector / Programme</span>
+          <span>Allocation</span>
+          <span>Change</span>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Education</div>
+            <div class="pw-cdf-county">TSC salaries, capitation, TVET, bursaries, infrastructure</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 702.7B</div>
+          <div class="pw-cdf-util util-high">↑ Largest</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Security</div>
+            <div class="pw-cdf-county">NPS KSh 125B · Correctional KSh 38B · Internal Security KSh 35B · Immigration KSh 20.3B</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 276.7B</div>
+          <div class="pw-cdf-util util-mid">↔ Stable</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Infrastructure</div>
+            <div class="pw-cdf-county">Roads KSh 217.3B · Rail KSh 38B · Urban/ferry transit KSh 1.2B</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 217.3B</div>
+          <div class="pw-cdf-util util-high">↑ +12.2%</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Health</div>
+            <div class="pw-cdf-county">Referral hospitals KSh 42.4B · Global Fund KSh 17.3B · Primary Healthcare Fund KSh 13.1B · UHC KSh 6.2B</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 138.1B</div>
+          <div class="pw-cdf-util util-high">↑ +15%</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">NG-CDF</div>
+            <div class="pw-cdf-county">290 constituencies · bursaries, schools, police posts, digital hubs</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 58B</div>
+          <div class="pw-cdf-util util-high">↑ +7.8B</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Debt Servicing (CFS)</div>
+            <div class="pw-cdf-county">Domestic interest · Foreign interest · Pensions · State Officer salaries</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 1.34T</div>
+          <div class="pw-cdf-util util-low">↑ +7.6%</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">ICT &amp; Digital Economy</div>
+            <div class="pw-cdf-county">Digital Economy Project KSh 3.7B · Konza Technopolis KSh 3.1B · Digital hubs KSh 689M</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 12.7B</div>
+          <div class="pw-cdf-util util-mid">↑ New</div>
+        </div>
+
+        <div class="pw-cdf-row">
+          <div>
+            <div class="pw-cdf-const">Agriculture</div>
+            <div class="pw-cdf-county">Fertiliser subsidy KSh 8B · Coffee Cherry Fund KSh 2B · Sugar sector reforms KSh 2B</div>
+          </div>
+          <div class="pw-cdf-amount">KSh 54.6B</div>
+          <div class="pw-cdf-util util-mid">↔ Stable</div>
+        </div>
+
+      </div><!-- /sector table -->
+    </div>
+
+    <!-- ── DEFICIT NOTICE ── -->
+    <div class="pw-notice" style="margin-top:1.5rem;">
+      ℹ️ FY 2025/26 fiscal deficit: KSh 923.2B (4.8% of GDP), up from KSh 597B in 2024/25. Financed by KSh 287.7B external borrowing and KSh 635.5B domestic borrowing.
+      Debt-to-GDP ratio projected to decline from 63% toward the 55% target by 2028.
+      Full budget documents at
+      <a href="https://www.treasury.go.ke" target="_blank">treasury.go.ke</a> and
+      <a href="https://www.parliament.go.ke" target="_blank">parliament.go.ke</a>.
+    </div>
+
+  </div><!-- /section-wrapper -->
+</section><!-- /dashboard -->

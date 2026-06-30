@@ -76,3 +76,9 @@ async function submitReport() {
   document.getElementById('ministry-select').value = '';
   document.getElementById('report-desc').value = '';
 }
+function pwShowTab(btn, panelId) {
+  document.querySelectorAll('.pw-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.pw-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
