@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel — Sauti ya Wananchi</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="Admin.css" />
 </head>
 <body>
 
@@ -39,46 +39,24 @@
     <!-- KPIs -->
     <div class="kpi-row">
       <div class="kpi-card">
-        <div class="kpi-label">Total Reports</div>
+        <div class="kpi-label">Total Comments</div>
         <div class="kpi-val green" id="kpi-total">—</div>
         <div class="kpi-sub">All time submissions</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Critical / High</div>
-        <div class="kpi-val red" id="kpi-critical">—</div>
-        <div class="kpi-sub">Urgent reports</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Anonymous</div>
-        <div class="kpi-val gold" id="kpi-anon">—</div>
-        <div class="kpi-sub">Anonymous submissions</div>
-      </div>
-      <div class="kpi-card">
         <div class="kpi-label">Today</div>
         <div class="kpi-val" id="kpi-today">—</div>
-        <div class="kpi-sub">Reports today</div>
+        <div class="kpi-sub">Comments today</div>
       </div>
     </div>
 
     <!-- TABLE -->
     <div class="toolbar">
       <div class="toolbar-left">
-        <span class="section-title">Corruption Reports</span>
-        <select class="filter-select" id="filter-severity" onchange="applyFilters()">
-          <option value="">All severities</option>
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
-          <option value="Critical">Critical</option>
-        </select>
-        <select class="filter-select" id="filter-anon" onchange="applyFilters()">
-          <option value="">All submissions</option>
-          <option value="true">Anonymous only</option>
-          <option value="false">Named only</option>
-        </select>
+        <span class="section-title">Public Comments</span>
       </div>
       <div style="display:flex;gap:0.75rem;align-items:center">
-        <input class="search-input" type="text" id="search-input" placeholder="Search ministry..." oninput="applyFilters()" />
+        <input class="search-input" type="text" id="search-input" placeholder="Search comments..." oninput="applyFilters()" />
         <button class="refresh-btn" onclick="loadReports()">↻ Refresh</button>
         <button class="export-btn" onclick="exportCSV()">↓ Export CSV</button>
       </div>
@@ -89,16 +67,13 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Ministry</th>
-            <th>Description</th>
-            <th>Severity</th>
-            <th>Submission</th>
+            <th>Comment</th>
             <th>Date & Time</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody id="reports-tbody">
-          <tr><td colspan="7"><div class="loading">Loading reports...</div></td></tr>
+          <tr><td colspan="4"><div class="loading">Loading comments...</div></td></tr>
         </tbody>
       </table>
       <div class="pagination" id="pagination" style="display:none">
@@ -112,7 +87,6 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="admin.js"></script>
+<script src="admiN.js"></script>
 </body>
 </html>
