@@ -1,4 +1,5 @@
 <?php
+require 'admin_session_check.php';
 require 'db_connect.php';
 
 $result = $conn->query("SELECT * FROM reports ORDER BY created_at DESC");

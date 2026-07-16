@@ -105,3 +105,30 @@
       .td-desc{display:none}
       .search-input{width:160px}
     }
+    .officials-tabs{
+  display:flex;
+  gap:0;
+  margin-bottom:1.25rem;
+  border-bottom:2px solid var(--gray-light, #e8e8e4);
+  width:fit-content;
+}
+.officials-tab{
+  padding:10px 20px;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:0.03em;
+  text-transform:uppercase;
+  color:var(--gray, #6b6b68);
+  background:none;
+  border:none;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  margin-bottom:-2px;
+  transition:all .15s;
+  font-family:'DM Sans',sans-serif;
+}
+.officials-tab:hover{color:var(--black, #0a0a08)}
+.officials-tab.active{
+  color:var(--green, #006600);
+  border-bottom-color:var(--green, #006600);
+}

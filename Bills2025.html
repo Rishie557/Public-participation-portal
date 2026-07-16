@@ -7,15 +7,29 @@
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f6fa; padding: 24px; color: #1a1a2e; }
     h1 { font-size: 1.4rem; color: #2c3e50; margin-bottom: 4px; }
-    .subtitle { color: #666; font-size: 0.9rem; margin-bottom: 28px; }
+    .subtitle { color: #666; font-size: 0.9rem; margin-bottom: 20px; }
+
+    .bills-controls { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    .bills-play-btn { display: flex; align-items: center; gap: 8px; background: #27ae60; color: #fff; border: none; border-radius: 8px; padding: 12px 20px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
+    .bills-play-btn.playing { background: #1e8449; }
+    .bills-voice-group { display: flex; align-items: center; gap: 8px; }
+    #bills-voice-picker { font-size: 0.85rem; padding: 8px 12px; border-radius: 20px; border: 1px solid #ccc; background: #fff; color: #333; }
+    .bills-lang-btn { font-size: 0.85rem; padding: 8px 14px; border-radius: 20px; border: 1px solid #ccc; background: #fff; color: #333; cursor: pointer; }
+    .bills-lang-btn.on { background: #d4efdf; border-color: #27ae60; color: #1e8449; font-weight: 700; }
+
+    .bills-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 24px; }
+    .bills-tab { flex-shrink: 0; font-size: 0.85rem; font-weight: 700; padding: 8px 16px; border-radius: 20px; border: 1px solid #ccc; background: #fff; color: #444; cursor: pointer; white-space: nowrap; }
+    .bills-tab:hover { border-color: #27ae60; color: #1e8449; }
+
+    .section-label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: #999; margin: 28px 0 10px; padding-left: 4px; border-bottom: 1px solid #e0e0e0; padding-bottom: 6px;
+      scroll-margin-top: 16px;
+    }
 
     .pw-vote-card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      padding: 20px 22px;
-      margin-bottom: 18px;
-      border-left: 4px solid #ccc;
+      background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 20px 22px; margin-bottom: 18px; border-left: 4px solid #ccc;
     }
     .pw-vote-card.card-passed   { border-left-color: #27ae60; }
     .pw-vote-card.card-rejected { border-left-color: #e74c3c; }
@@ -35,9 +49,13 @@
     .pw-source-link { font-size: 0.72rem; color: #2980b9; text-decoration: none; white-space: nowrap; }
     .pw-source-link:hover { text-decoration: underline; }
 
-    @media (max-width: 600px) {
-      .pw-vote-header { flex-direction: column; }
+    .card-listen-btn {
+      background: #d4efdf; border: 1px solid #27ae60; color: #1e8449;
+      font-size: 0.8rem; font-weight: 700; padding: 7px 14px; border-radius: 16px; cursor: pointer; margin-bottom: 10px;
     }
+    .card-listen-btn.speaking { background: #27ae60; color: #fff; }
+
+    @media (max-width: 600px) { .pw-vote-header { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -45,8 +63,26 @@
 <h1>Kenya Parliament — Bills 2025 Legislative Outcomes</h1>
 <p class="subtitle">National Assembly &amp; Senate · FY 2025/26 Budget Session</p>
 
-<!-- ── FINANCE BILL, 2025 ── -->
-<div class="pw-vote-card card-passed">
+<div class="bills-controls">
+  <button class="bills-play-btn" id="bills-play-btn" onclick="toggleBillsPlayAll()">▶ Play All Bills</button>
+  <div class="bills-voice-group">
+    <button class="bills-lang-btn" id="bills-lang-btn" onclick="toggleBillsLang()">🌐 Kiswahili</button>
+    <select id="bills-voice-picker" aria-label="Choose a voice"></select>
+  </div>
+</div>
+
+<div class="bills-tabs">
+  <button class="bills-tab" onclick="scrollToBillsGroup('group-budget')">Budget</button>
+  <button class="bills-tab" onclick="scrollToBillsGroup('group-gov')">Governance</button>
+  <button class="bills-tab" onclick="scrollToBillsGroup('group-health')">Health</button>
+  <button class="bills-tab" onclick="scrollToBillsGroup('group-infra')">Infrastructure &amp; Energy</button>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<div class="section-label" id="group-budget">Budget &amp; Appropriations</div>
+<!-- ═══════════════════════════════════════ -->
+
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Fedha, 2025. Umepitishwa kuwa sheria. Kifungu cha ufikiaji wa data cha KRA kimeondolewa. Unalenga kupata shilingi bilioni 24 za mapato mapya.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Finance Bill, 2025 </div>
@@ -54,14 +90,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">MPs voted unanimously · KRA data-access clause (Clause 52) dropped · Targets KSh 24B in new revenue for FY 2025/26 · Signed into law 26 Jun 2025 by President Ruto, effective 1 Jul 2025</span>
     <a href="https://parliament.go.ke" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
   </div>
 </div>
 
-<!-- ── APPROPRIATION BILL, 2025 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Ugavi, 2025. Umepitishwa kuwa sheria. Unaruhusu matumizi ya shilingi trilioni 1.88 kwa mwaka wa fedha 2025/26.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Appropriation Bill, 2025</div>
@@ -69,14 +105,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Authorises KSh 1.88T withdrawal from Consolidated Fund for FY 2025/26 · MDAs to utilise KSh 671.99B in Appropriations-in-Aid · Signed same day as Finance Bill 2025</span>
     <a href="https://parliament.go.ke" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
   </div>
 </div>
 
-<!-- ── SUPPLEMENTARY APPROPRIATION BILL, 2025 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Nyongeza ya Ugavi, 2025. Umepitishwa kuwa sheria. Umegawa fedha za ziada kwa elimu, afya, usalama na miundombinu.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Supplementary Appropriation Bill, 2025</div>
@@ -84,14 +120,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Sponsored by Deputy Speaker Gladys Boss (Uasin Gishu CWR) · Reallocated funds to education (KSh 18B to TSC), health (UHC), security &amp; infrastructure · Authorises Consolidated Fund withdrawals for FY ending 30 Jun 2025</span>
     <a href="https://www.president.go.ke/president-ruto-assents-to-the-supplementary-appropriation-bill-2025-to-fund-key-programmes/" target="_blank" class="pw-source-link">Source: President's Office ↗</a>
   </div>
 </div>
 
-<!-- ── COUNTY GOVERNMENTS ADDITIONAL ALLOCATIONS BILL, 2025 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Mgao wa Ziada kwa Serikali za Kaunti, 2025. Umepitishwa kuwa sheria. Kaunti zimepewa shilingi bilioni 69.8 kwa afya na miundombinu.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">County Governments Additional Allocations Bill, 2025</div>
@@ -99,14 +135,18 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Provides framework for targeted grants &amp; loans to counties for health and infrastructure · County Additional Allocations approved at KSh 69.8B per BPS · Both NA Bill No.2 of 2025 and Senate Bill No.1 of 2025 versions passed</span>
     <a href="https://www.parliament.go.ke/node/23515" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
   </div>
 </div>
 
-<!-- ── PUBLIC FINANCE MANAGEMENT (AMENDMENT) (No. 2) BILL ── -->
-<div class="pw-vote-card card-passed">
+<!-- ═══════════════════════════════════════ -->
+<div class="section-label" id="group-gov">Governance &amp; Public Administration</div>
+<!-- ═══════════════════════════════════════ -->
+
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Usimamizi wa Fedha za Umma (Na. 2). Umepitishwa kuwa sheria. Unaimarisha uwajibikaji katika matumizi ya rasilimali za umma.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Public Finance Management (Amendment) (No. 2) Bill</div>
@@ -114,14 +154,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Tightens loopholes in public financial management · Reinforces accountability in use of public resources and fiscal discipline amid Kenya's debt challenges · Passed alongside Public Audit (Amendment) Bill</span>
     <a href="https://www.parliament.go.ke/node/23515" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
   </div>
 </div>
 
-<!-- ── PUBLIC AUDIT (AMENDMENT) BILL ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Ukaguzi wa Umma. Umepitishwa kuwa sheria. Unaimarisha uhuru wa Ofisi ya Mkaguzi Mkuu wa Hesabu za Serikali.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Public Audit (Amendment) Bill</div>
@@ -129,14 +169,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Reinforces independence and operational efficiency of the Auditor-General's office · Strengthens oversight of public resource use · Passed during the February–March 2025 sitting period</span>
     <a href="https://www.parliament.go.ke/node/23515" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
   </div>
 </div>
 
-<!-- ── NATIONAL LAND COMMISSION (AMENDMENT) BILL ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Tume ya Kitaifa ya Ardhi. Umepitishwa kuwa sheria. Unaimarisha mamlaka ya Tume katika usimamizi wa ardhi na utatuzi wa migogoro.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">National Land Commission (Amendment) Bill</div>
@@ -144,14 +184,18 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Strengthens NLC mandate in land administration &amp; dispute resolution · Assented as part of eight-bill package on 15 Oct 2025 · Intended to reopen window for addressing historical land injustices and prevent public land grabbing</span>
     <a href="https://www.kenyanews.go.ke/government-clarifies-concerns-over-eight-recently-assented-bills/" target="_blank" class="pw-source-link">Source: Kenya News Agency ↗</a>
   </div>
 </div>
 
-<!-- ── HEALTH (AMENDMENT) BILL, 2025 ── -->
-<div class="pw-vote-card card-pending">
+<!-- ═══════════════════════════════════════ -->
+<div class="section-label" id="group-health">Health</div>
+<!-- ═══════════════════════════════════════ -->
+
+<div class="pw-vote-card card-pending" data-sw="Mswada wa Marekebisho ya Afya, 2025. Bado uko kwenye mchakato. Unalenga kuoanisha Sheria ya Afya na mfumo wa Bima ya Afya kwa Wote.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Health (Amendment) Bill, 2025</div>
@@ -159,14 +203,18 @@
     </div>
     <span class="pw-bill-stage stage-pending">In Progress</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Published Sep 2025 · Proposes amendments to the Health Act to align with UHC rollout and Social Health Authority reforms · Vote outcome not yet publicly confirmed as of Jun 2026</span>
     <a href="https://www.parliament.go.ke" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
   </div>
 </div>
 
-<!-- ── ENERGY (AMENDMENT) BILL, 2025 ── -->
-<div class="pw-vote-card card-passed">
+<!-- ═══════════════════════════════════════ -->
+<div class="section-label" id="group-infra">Infrastructure &amp; Energy</div>
+<!-- ═══════════════════════════════════════ -->
+
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Nishati, 2025. Umepitishwa na Seneti. Unalenga kurahisisha mikataba ya ununuzi wa nishati na kurekebisha sekta ya nishati.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Energy (Amendment) Bill, 2025</div>
@@ -174,14 +222,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed Senate</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Passed Senate without amendments 15 Apr 2025 · Seeks to streamline energy purchase agreements and reform the energy sector · Received by NA Speaker 24 Apr 2025 and referred to Departmental Committee on Energy</span>
     <a href="https://www.parliament.go.ke/node/23742" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
   </div>
 </div>
 
-<!-- ── KENYA ROADS (AMENDMENT) BILL, 2025 ── -->
-<div class="pw-vote-card card-pending">
+<div class="pw-vote-card card-pending" data-sw="Mswada wa Marekebisho ya Barabara za Kenya, 2025. Bado uko kwenye mchakato. Toleo kadhaa zimewasilishwa kurekebisha Sheria ya Barabara za Kenya.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Kenya Roads (Amendment) Bill, 2025</div>
@@ -189,11 +237,150 @@
     </div>
     <span class="pw-bill-stage stage-pending">In Progress</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Original bill published Apr 2025 · Subsequent versions (No.2 and No.3 of 2025) introduced later in the year · Seeks to amend the Kenya Roads Act · Vote outcome and presidential assent not yet confirmed as of Jun 2026</span>
     <a href="https://parliament.go.ke/node/23706" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
   </div>
 </div>
+
+<script>
+let billsKiswahili = false;
+let billsSelectedVoice = null;
+let billsMatchedVoices = [];
+let billsCurrentUtterance = null;
+let billsPlayingAll = false;
+let billsPlayQueue = [];
+
+const billsVoiceOptions = [
+  { match: 'Zira',   label: 'Female',   lang: 'en' },
+  { match: 'Mark',   label: 'Male',     lang: 'en' },
+  { match: 'Rafiki', label: 'Mwanaume', lang: 'sw' },
+  { match: 'Zuri',   label: 'Mwanamke', lang: 'sw' }
+];
+
+function billsLoadVoices(){
+  const voices = window.speechSynthesis.getVoices();
+  const picker = document.getElementById('bills-voice-picker');
+  if (!picker || voices.length === 0) return;
+
+  const currentLang = billsKiswahili ? 'sw' : 'en';
+  picker.innerHTML = '';
+
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = 'Voice / Sauti';
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  picker.appendChild(placeholder);
+
+  billsMatchedVoices = [];
+  billsVoiceOptions
+    .filter(w => w.lang === currentLang)
+    .forEach(w => {
+      const voice = voices.find(v => v.name.includes(w.match));
+      if (voice) {
+        billsMatchedVoices.push({ voice, label: w.label });
+        const opt = document.createElement('option');
+        opt.value = billsMatchedVoices.length - 1;
+        opt.textContent = w.label;
+        picker.appendChild(opt);
+      }
+    });
+
+  picker.style.display = billsMatchedVoices.length > 0 ? 'inline-block' : 'none';
+  picker.onchange = () => {
+    if (picker.value === '') { billsSelectedVoice = null; return; }
+    billsSelectedVoice = billsMatchedVoices[picker.value].voice;
+  };
+  billsSelectedVoice = billsMatchedVoices[0] ? billsMatchedVoices[0].voice : null;
+}
+
+window.speechSynthesis.onvoiceschanged = billsLoadVoices;
+billsLoadVoices();
+
+function toggleBillsLang(){
+  billsKiswahili = !billsKiswahili;
+  const btn = document.getElementById('bills-lang-btn');
+  btn.classList.toggle('on', billsKiswahili);
+  btn.textContent = billsKiswahili ? '🌐 English' : '🌐 Kiswahili';
+  billsLoadVoices();
+}
+
+function billsCardText(card){
+  if (billsKiswahili) {
+    return card.getAttribute('data-sw') || card.querySelector('.pw-vote-title').textContent.trim();
+  }
+  const title = card.querySelector('.pw-vote-title')?.textContent.trim() || '';
+  const meta = card.querySelector('.pw-vote-meta')?.textContent.trim() || '';
+  const footnote = card.querySelector('.pw-vote-footnote')?.textContent.trim() || '';
+  return [title, meta, footnote].filter(Boolean).join('. ');
+}
+
+function speakBillsText(text, onEnd){
+  const utterance = new SpeechSynthesisUtterance(text);
+  if (billsSelectedVoice) utterance.voice = billsSelectedVoice;
+  else utterance.lang = billsKiswahili ? 'sw-KE' : 'en-US';
+  utterance.onend = onEnd;
+  utterance.onerror = onEnd;
+  billsCurrentUtterance = utterance;
+  speechSynthesis.speak(utterance);
+}
+
+function readBillCard(btn){
+  const card = btn.closest('.pw-vote-card');
+  const wasSpeaking = btn.classList.contains('speaking');
+  stopBillsPlayAll();
+  speechSynthesis.cancel();
+  document.querySelectorAll('.card-listen-btn.speaking').forEach(b => b.classList.remove('speaking'));
+  if (wasSpeaking) return;
+
+  setTimeout(() => {
+    btn.classList.add('speaking');
+    speakBillsText(billsCardText(card), () => btn.classList.remove('speaking'));
+  }, 50);
+}
+
+function toggleBillsPlayAll(){
+  if (billsPlayingAll) { stopBillsPlayAll(); return; }
+  speechSynthesis.cancel();
+  document.querySelectorAll('.card-listen-btn.speaking').forEach(b => b.classList.remove('speaking'));
+
+  billsPlayingAll = true;
+  billsPlayQueue = Array.from(document.querySelectorAll('.pw-vote-card'));
+  const playBtn = document.getElementById('bills-play-btn');
+  playBtn.textContent = '⏹ Stop';
+  playBtn.classList.add('playing');
+
+  setTimeout(playNextBillsCard, 50);
+}
+
+function playNextBillsCard(){
+  if (!billsPlayingAll || billsPlayQueue.length === 0) { stopBillsPlayAll(); return; }
+  const card = billsPlayQueue.shift();
+  const listenBtn = card.querySelector('.card-listen-btn');
+  listenBtn.classList.add('speaking');
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  speakBillsText(billsCardText(card), () => {
+    listenBtn.classList.remove('speaking');
+    if (billsPlayingAll) setTimeout(playNextBillsCard, 300);
+  });
+}
+
+function stopBillsPlayAll(){
+  billsPlayingAll = false;
+  billsPlayQueue = [];
+  const playBtn = document.getElementById('bills-play-btn');
+  playBtn.textContent = '▶ Play All Bills';
+  playBtn.classList.remove('playing');
+  document.querySelectorAll('.card-listen-btn.speaking').forEach(b => b.classList.remove('speaking'));
+}
+
+function scrollToBillsGroup(id){
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
 
 </body>
 </html>

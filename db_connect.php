@@ -1,6 +1,5 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+
 
 $conn = new mysqli('localhost', 'root', '', 'sauti_db');
 
@@ -9,3 +8,5 @@ if ($conn->connect_error) {
     echo json_encode(['error' => 'Database connection failed']);
     exit;
 }
+
+$conn->set_charset('utf8mb4');

@@ -1,3 +1,6 @@
+<?php 
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,36 +18,12 @@
     <div class="nav-logo-mark">SW</div>
     <span class="nav-brand">Sauti ya <span>Wananchi</span></span>
   </div>
-  <div class="nav-links">
-     <div class="dropdown">
-    <button class="dropbtn">VOTE</button>
-
-    <div class="dropdown-content">
-    <a href="Votes.html">Vote 2026</a>
-    </div>
-    </div>
-    <div class="dropdown">
-    <button class="dropbtn">TRANSPARENCY </button>
-
-    <div class="dropdown-content">
-        <a href="Spend2024.html">2024 SPEND</a>
-        <a href="Spend2025.html">2025 SPEND</a>
-        <a href="Spend2026.html">2026 SPEND</a>
-    </div>
-</div>
-    <div class="dropdown">
-    <button class="dropbtn">BILLS</button>
-
-    <div class="dropdown-content">
-        <a href="Bills2024.html">Bills 2024</a>
-        <a href="Bills2025.html">Bills 2025</a>
-        <a href="Bills2026.html">Bills 2026</a>
-    </div>
-</div>
-    <a href="#advocacy">Advocacy</a>
-    <a href="Votes.html" class="nav-cta">Cast Your Vote</a>
+  <div class="nav-links">        
+      <a href="login.html" class="nav-cta">Sign In</a>
+    
   </div>
 </nav>
+
 
 <section id="hero">
   <div class="alert-bar">
@@ -71,37 +50,6 @@
     </div>
   </div>
 </section>
-
-<!-- ══════════════════════════════════════════
-     ADVOCACY SECTION
-══════════════════════════════════════════ -->
-<section id="advocacy">
-  <div class="section-wrapper">
-    <div class="section-eyebrow">Policy Advocacy</div>
-    <h2 class="section-title">Turning Votes into Policy</h2>
-    <p class="section-sub">Every vote you cast becomes part of a formal citizen submission.</p>
-
-    <div class="advocacy-grid">
-      <div class="advocacy-card">
-        <div class="advocacy-icon">✅</div>
-        <h3>Citizens Vote</h3>
-        <p>You vote on proposed laws before they pass.</p>
-      </div>
-      <div class="advocacy-card">
-        <div class="advocacy-icon">📊</div>
-        <h3>Data Aggregated</h3>
-        <p>Results are compiled into formal reports.</p>
-      </div>
-      <div class="advocacy-card">
-        <div class="advocacy-icon">🏛️</div>
-        <h3>Submitted to Parliament</h3>
-        <p>Reports are delivered to oversight bodies.</p>
-      </div>
-    </div>
-
-  </div><!-- /section-wrapper -->
-</section><!-- /advocacy -->
-
 
 <footer>
   <div class="footer-inner">

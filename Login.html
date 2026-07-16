@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sign In — Sauti ya Wananchi</title>
+<meta name="description" content="Sign in or register to vote on Kenyan tax policy, track county spending, and engage with your government." />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+  #login-section{background:var(--black);min-height:100vh;display:flex;flex-direction:column;padding-top:60px}
+  .login-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:60px 1.5rem}
+  .login-card{width:100%;max-width:460px;background:#141412;border:1px solid rgba(255,255,255,0.08);border-radius:6px;overflow:hidden}
+  .login-head{padding:2rem 2rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.08)}
+  .login-eyebrow{font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green-light);margin-bottom:0.6rem}
+  .login-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:#fff;line-height:1.15}
+  .login-tabs{display:flex;background:#0a0a08}
+  .login-tab{flex:1;padding:14px;text-align:center;font-size:13px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#777;background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;font-family:'DM Sans',sans-serif}
+  .login-tab.active{color:#fff;border-bottom-color:var(--green)}
+  .login-body{padding:2rem}
+  .role-picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+  .role-opt{position:relative}
+  .role-opt input{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;margin:0;top:0;left:0}
+  .role-opt-card{border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:14px 10px;text-align:center;transition:all .15s;pointer-events:none}
+  .role-opt-icon{font-size:20px;margin-bottom:6px}
+  .role-opt-label{font-size:12px;font-weight:600;color:#ccc;letter-spacing:0.02em}
+  .role-opt input:checked ~ .role-opt-card{border-color:var(--green);background:rgba(0,102,0,0.15)}
+  .role-opt input:checked ~ .role-opt-card .role-opt-label{color:#fff}
+  .role-opt input:focus-visible ~ .role-opt-card{outline:2px solid var(--green-light);outline-offset:2px}
+  .gov-note{display:none;background:rgba(200,149,42,0.1);border:1px solid rgba(200,149,42,0.35);border-radius:4px;padding:10px 12px;font-size:12px;color:#e0bd7a;line-height:1.6;margin-bottom:1.25rem}
+  .gov-note.show{display:block}
+  .field{margin-bottom:1.1rem}
+  .field-label{font-size:13px;font-weight:600;color:#ddd;margin-bottom:6px;display:block;letter-spacing:0.02em}
+  .field-input,.field-select{width:100%;padding:12px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:3px;font-size:14px;color:#fff;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s}
+  .field-input:focus,.field-select:focus{border-color:var(--green-light)}
+  .field-input:disabled{opacity:0.5;cursor:not-allowed}
+  .field-select option{background:#141412;color:#fff}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .field-hint{font-size:11px;color:#777;margin-top:5px;line-height:1.5}
+  .toggle-visibility{position:relative}
+  .toggle-visibility button{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#888;font-size:11px;font-weight:600;letter-spacing:0.04em;cursor:pointer;font-family:'DM Sans',sans-serif}
+  .submit-btn-login{width:100%;padding:14px;background:var(--green);color:#fff;font-size:15px;font-weight:600;border:none;border-radius:3px;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.03em;transition:background .2s;margin-top:0.25rem}
+  .submit-btn-login:hover{background:var(--green-light)}
+  .login-alt{text-align:center;font-size:12px;color:#777;margin-top:1.25rem;line-height:1.8}
+  .login-alt a{color:var(--green-light);text-decoration:none;font-weight:600;cursor:pointer}
+  .login-alt a:hover{text-decoration:underline}
+  .form-panel{display:none}
+  .form-panel.active{display:block}
+  .accessibility-bar{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0.6rem 1rem;padding:12px;background:#0a0a08;border-top:1px solid rgba(255,255,255,0.08)}
+  .a11y-btn{background:none;border:1px solid rgba(255,255,255,0.15);color:#aaa;font-size:12px;font-weight:500;padding:6px 12px;border-radius:20px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
+  .a11y-btn:hover,.a11y-btn.on{border-color:var(--green-light);color:#fff}
+  #voice-picker{max-width:110px;padding:6px 10px;font-size:11px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:20px;color:#fff;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+  .field-error{font-size:12px;color:#ff8a8a;margin-top:6px;display:none}
+  .field-error.show{display:block}
+  body.large-text .login-card{font-size:112%}
+  @media(max-width:480px){.field-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">SW</div>
+    <span class="nav-brand">Sauti ya <span>Wananchi</span></span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="Votes.html">Vote</a>
+    <a href="index.html#advocacy">Advocacy</a>
+    <a href="login.html" class="nav-cta">Sign In</a>
+  </div>
+</nav>
+
+<section id="login-section">
+  <div class="login-wrap">
+    <div class="login-card">
+
+      <div class="login-head">
+        <div class="login-eyebrow">Citizen &amp; Government Access</div>
+        <div class="login-title">Sign in to your account</div>
+      </div>
+
+      <div class="login-tabs">
+        <button class="login-tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+        <button class="login-tab" id="tab-register" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <div class="login-body">
+
+        <!-- SIGN IN -->
+        <div class="form-panel active" id="panel-signin">
+          <div class="role-picker" role="radiogroup" aria-label="I am signing in as">
+            <label class="role-opt">
+              <input type="radio" name="signin-role" value="citizen" checked>
+              <div class="role-opt-card">
+                <div class="role-opt-icon">🧑🏾</div>
+                <div class="role-opt-label">Citizen</div>
+              </div>
+            </label>
+            <label class="role-opt">
+              <input type="radio" name="signin-role" value="official">
+              <div class="role-opt-card">
+                <div class="role-opt-icon">🏛️</div>
+                <div class="role-opt-label">Gov. Official</div>
+              </div>
+            </label>
+          </div>
+
+          <form id="form-signin" onsubmit="return handleSignIn(event)">
+            <div class="field">
+              <label class="field-label" for="signin-id">Email or phone number</label>
+              <input class="field-input" id="signin-id" type="text" placeholder="e.g. jane@email.com or 0712345678" required>
+            </div>
+            <div class="field">
+              <label class="field-label" for="signin-pass">Password</label>
+              <div class="toggle-visibility">
+                <input class="field-input" id="signin-pass" type="password" placeholder="Enter your password" required>
+                <button type="button" onclick="togglePass('signin-pass',this)">SHOW</button>
+              </div>
+            </div>
+            <div class="field-error" id="signin-error">Incorrect email/phone or password. Please try again.</div>
+            <button class="submit-btn-login" type="submit">Sign In</button>
+          </form>
+
+          <div class="login-alt">
+            Forgot your password? <a onclick="alert('Wire up supabase.auth.resetPasswordForEmail() here')">Reset it</a><br>
+            Are you an administrator? <a href="admin.html">Admin sign in</a>
+          </div>
+        </div>
+
+        <!-- REGISTER -->
+        <div class="form-panel" id="panel-register">
+          <div class="role-picker" role="radiogroup" aria-label="I am registering as">
+            <label class="role-opt">
+              <input type="radio" name="reg-role" value="citizen" checked onchange="onRoleChange()">
+              <div class="role-opt-card">
+                <div class="role-opt-icon">🧑🏾</div>
+                <div class="role-opt-label">Citizen</div>
+              </div>
+            </label>
+            <label class="role-opt">
+              <input type="radio" name="reg-role" value="official" onchange="onRoleChange()">
+              <div class="role-opt-card">
+                <div class="role-opt-icon">🏛️</div>
+                <div class="role-opt-label">Gov. Official</div>
+              </div>
+            </label>
+          </div>
+
+          <div class="gov-note" id="gov-note">
+            Government official accounts are reviewed manually before activation. You'll be asked for your office ID, position, and department, and an admin verifies your details before you can post official responses or spending updates.
+          </div>
+
+          <form id="form-register" onsubmit="return handleRegister(event)">
+            <div class="field">
+              <label class="field-label" for="reg-name">Full name</label>
+              <input class="field-input" id="reg-name" type="text" placeholder="As on your ID" required>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="reg-national-id">National ID number</label>
+              <input class="field-input" id="reg-national-id" type="text" placeholder="e.g. 12345678" required>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label" for="reg-phone">Phone number (optional)</label>
+                <input class="field-input" id="reg-phone" type="tel" placeholder="0712345678" >
+              </div>
+              <div class="field">
+                <label class="field-label" for="reg-email">Email </label>
+                <input class="field-input" id="reg-email" type="email" placeholder="jane@email.com" required>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label" for="reg-county">County</label>
+                <input class="field-input" id="reg-county" type="text" list="county-list" placeholder="Type to search…" autocomplete="off" required>
+                <datalist id="county-list"></datalist>
+              </div>
+              <div class="field">
+                <label class="field-label" for="reg-constituency">Constituency</label>
+                <input class="field-input" id="reg-constituency" type="text" list="constituency-list" placeholder="Select a county first" autocomplete="off" required disabled>
+                <datalist id="constituency-list"></datalist>
+              </div>
+            </div>
+
+            <div class="field" id="official-id-field" style="display:none">
+              <label class="field-label" for="reg-office-id">Office / staff ID number</label>
+              <input class="field-input" id="reg-office-id" type="text" placeholder="Used only to verify your role">
+              <div class="field-hint">Not shown publicly. An admin cross-checks this before your account is marked verified.</div>
+            </div>
+
+            <div class="field-row" id="official-extra-fields" style="display:none">
+              <div class="field">
+                <label class="field-label" for="reg-position">Position / title</label>
+                <input class="field-input" id="reg-position" type="text" placeholder="e.g. MP, MCA, Clerk">
+              </div>
+              <div class="field">
+                <label class="field-label" for="reg-gov-level">Government level</label>
+                <select class="field-select" id="reg-gov-level">
+                  <option value="">Select level</option>
+                  <option value="national">National</option>
+                  <option value="county">County</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field" id="official-dept-field" style="display:none">
+              <label class="field-label" for="reg-department">Office / department</label>
+              <input class="field-input" id="reg-department" type="text" placeholder="e.g. Ministry of Health, Nakuru County Assembly">
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="reg-pass">Create a password</label>
+              <div class="toggle-visibility">
+                <input class="field-input" id="reg-pass" type="password" placeholder="At least 8 characters" minlength="8" required>
+                <button type="button" onclick="togglePass('reg-pass',this)">SHOW</button>
+              </div>
+            </div>
+
+            <button class="submit-btn-login" type="submit">Create account</button>
+          </form>
+
+          <div class="login-alt">
+            Already have an account? <a onclick="switchTab('signin')">Sign in</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="accessibility-bar">
+        <button class="a11y-btn" id="btn-lang" onclick="toggleLang()">🌐 Kiswahili</button>
+        <button class="a11y-btn" id="btn-text" onclick="toggleTextSize()">A+ Larger text</button>
+        <button class="a11y-btn" onclick="speakForm()">🔊 Listen</button>
+        <select class="field-select" id="voice-picker" style="display:none"></select>
+    </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+<script src="login.js"></script>
+
+</body>
+</html>

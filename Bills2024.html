@@ -7,27 +7,29 @@
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f6fa; padding: 24px; color: #1a1a2e; }
     h1 { font-size: 1.4rem; color: #2c3e50; margin-bottom: 4px; }
-    .subtitle { color: #666; font-size: 0.9rem; margin-bottom: 28px; }
+    .subtitle { color: #666; font-size: 0.9rem; margin-bottom: 20px; }
+
+    .bills-controls { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    .bills-play-btn { display: flex; align-items: center; gap: 8px; background: #27ae60; color: #fff; border: none; border-radius: 8px; padding: 12px 20px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
+    .bills-play-btn.playing { background: #1e8449; }
+    .bills-voice-group { display: flex; align-items: center; gap: 8px; }
+    #bills-voice-picker { font-size: 0.85rem; padding: 8px 12px; border-radius: 20px; border: 1px solid #ccc; background: #fff; color: #333; }
+    .bills-lang-btn { font-size: 0.85rem; padding: 8px 14px; border-radius: 20px; border: 1px solid #ccc; background: #fff; color: #333; cursor: pointer; }
+    .bills-lang-btn.on { background: #d4efdf; border-color: #27ae60; color: #1e8449; font-weight: 700; }
+
+    .bills-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 24px; }
+    .bills-tab { flex-shrink: 0; font-size: 0.85rem; font-weight: 700; padding: 8px 16px; border-radius: 20px; border: 1px solid #ccc; background: #fff; color: #444; cursor: pointer; white-space: nowrap; }
+    .bills-tab:hover { border-color: #27ae60; color: #1e8449; }
 
     .section-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #999;
-      margin: 28px 0 10px;
-      padding-left: 4px;
-      border-bottom: 1px solid #e0e0e0;
-      padding-bottom: 6px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: #999; margin: 28px 0 10px; padding-left: 4px; border-bottom: 1px solid #e0e0e0; padding-bottom: 6px;
+      scroll-margin-top: 16px;
     }
 
     .pw-vote-card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      padding: 20px 22px;
-      margin-bottom: 18px;
-      border-left: 4px solid #ccc;
+      background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 20px 22px; margin-bottom: 18px; border-left: 4px solid #ccc;
     }
     .pw-vote-card.card-passed   { border-left-color: #27ae60; }
     .pw-vote-card.card-rejected { border-left-color: #e74c3c; }
@@ -47,9 +49,13 @@
     .pw-source-link { font-size: 0.72rem; color: #2980b9; text-decoration: none; white-space: nowrap; }
     .pw-source-link:hover { text-decoration: underline; }
 
-    @media (max-width: 600px) {
-      .pw-vote-header { flex-direction: column; }
+    .card-listen-btn {
+      background: #d4efdf; border: 1px solid #27ae60; color: #1e8449;
+      font-size: 0.8rem; font-weight: 700; padding: 7px 14px; border-radius: 16px; cursor: pointer; margin-bottom: 10px;
     }
+    .card-listen-btn.speaking { background: #27ae60; color: #fff; }
+
+    @media (max-width: 600px) { .pw-vote-header { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -57,12 +63,27 @@
 <h1>Kenya Parliament — Bills 2024 Legislative Outcomes</h1>
 <p class="subtitle">National Assembly &amp; Senate · FY 2024/25 Budget Session</p>
 
+<div class="bills-controls">
+  <button class="bills-play-btn" id="bills-play-btn" onclick="toggleBillsPlayAll()">▶ Play All Bills</button>
+  <div class="bills-voice-group">
+    <button class="bills-lang-btn" id="bills-lang-btn" onclick="toggleBillsLang()">🌐 Kiswahili</button>
+    <select id="bills-voice-picker" aria-label="Choose a voice"></select>
+  </div>
+</div>
+
+<div class="bills-tabs">
+  <button class="bills-tab" onclick="scrollToBillsGroup('group-rejected')">Rejected</button>
+  <button class="bills-tab" onclick="scrollToBillsGroup('group-budget')">Budget</button>
+  <button class="bills-tab" onclick="scrollToBillsGroup('group-tax')">Tax Reform</button>
+  <button class="bills-tab" onclick="scrollToBillsGroup('group-housing')">Housing &amp; Land</button>
+  <button class="bills-tab" onclick="scrollToBillsGroup('group-gov')">Governance</button>
+</div>
+
 <!-- ═══════════════════════════════════════ -->
-<div class="section-label">Rejected / Withdrawn</div>
+<div class="section-label" id="group-rejected">Rejected / Withdrawn</div>
 <!-- ═══════════════════════════════════════ -->
 
-<!-- ── FINANCE BILL, 2024 ── -->
-<div class="pw-vote-card card-rejected">
+<div class="pw-vote-card card-rejected" data-sw="Mswada wa Fedha, 2024. Uliondolewa baada ya maandamano makubwa ya vijana. Rais alikataa kutia sahihi, na wabunge waliondoa vifungu vyote.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Finance Bill, 2024 — Third Reading</div>
@@ -70,6 +91,7 @@
     </div>
     <span class="pw-bill-stage stage-rejected">Withdrawn</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">301 of 349 MPs participated · 2nd reading: 204 ayes, 115 nays · President declined assent 24 Jun 2024 following Gen Z protests that left parliament stormed and protesters killed · MPs agreed with presidential reservations and deleted all clauses 25 Jul 2024 · No bill presented for assent</span>
     <a href="https://parliament.go.ke/node/22244" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
@@ -77,11 +99,10 @@
 </div>
 
 <!-- ═══════════════════════════════════════ -->
-<div class="section-label">Budget &amp; Appropriations</div>
+<div class="section-label" id="group-budget">Budget &amp; Appropriations</div>
 <!-- ═══════════════════════════════════════ -->
 
-<!-- ── APPROPRIATIONS BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Ugavi, 2024. Umepitishwa kuwa sheria. Unatoa shilingi trilioni 1.82 kwa mwaka wa fedha 2024/25.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Appropriations Bill, 2024</div>
@@ -89,14 +110,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Passed same session as Finance Bill 3rd reading · Appropriates KSh 1.82T for FY 2024/25 · Signed by President Ruto alongside the budget cut order following Finance Bill withdrawal</span>
     <a href="https://parliament.go.ke" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
   </div>
 </div>
 
-<!-- ── SUPPLEMENTARY APPROPRIATION (No. 2) BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Nyongeza ya Ugavi (Na. 2), 2024. Umepitishwa kuwa sheria. Ulipunguza matumizi kwa shilingi bilioni 145.7 baada ya kuondolewa kwa Mswada wa Fedha.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Supplementary Appropriation (No. 2) Bill, 2024</div>
@@ -104,14 +125,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Cut KSh 145.7B across Executive (KSh 139.8B), Parliament (KSh 3.7B) &amp; Judiciary (KSh 2.1B) · Offset Finance Bill 2024 revenue shortfall of KSh 344.3B · Safeguarded KSh 20B for farmers, KSh 120.7B for education, KSh 16.2B for health</span>
     <a href="https://parliament.go.ke/node/22334" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
   </div>
 </div>
 
-<!-- ── DIVISION OF REVENUE (AMENDMENT) BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Mgawanyo wa Mapato, 2024. Umepitishwa kuwa sheria. Kaunti zimepewa shilingi bilioni 387.4 kama sehemu yao ya mapato.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Division of Revenue (Amendment) Bill, 2024</div>
@@ -119,14 +140,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Passed NA without amendments · Senate amended Oct 2024 · Mediated · Counties allocated KSh 387.4B equitable share (24.67% of audited revenue) for FY 2024/25 · Up KSh 2B from previous year's KSh 385B</span>
     <a href="https://parliament.go.ke/node/23082" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
   </div>
 </div>
 
-<!-- ── COUNTY ALLOCATION OF REVENUE BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Mgao wa Mapato kwa Kaunti, 2024. Umepitishwa kuwa sheria. Unagawanya mapato kati ya kaunti 47 za Kenya.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">County Allocation of Revenue Bill, 2024</div>
@@ -134,6 +155,7 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Senate bill · Distributes the KSh 387.4B equitable share among Kenya's 47 county governments · Exact division figures not publicly reported</span>
     <a href="https://mzalendo.com" target="_blank" class="pw-source-link">Source: Mzalendo ↗</a>
@@ -141,11 +163,10 @@
 </div>
 
 <!-- ═══════════════════════════════════════ -->
-<div class="section-label">Tax &amp; Finance Reform</div>
+<div class="section-label" id="group-tax">Tax &amp; Finance Reform</div>
 <!-- ═══════════════════════════════════════ -->
 
-<!-- ── TAX LAWS (AMENDMENT) BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Sheria za Kodi, 2024. Umepitishwa kuwa sheria. Umeanzisha Kodi ya Uwepo Muhimu wa Kiuchumi kwa makampuni ya kimataifa.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Tax Laws (Amendment) Bill, 2024</div>
@@ -153,14 +174,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Amends Income Tax Act, VAT Act, Excise Duty Act &amp; Miscellaneous Fees and Levies Act · Introduced Significant Economic Presence Tax (SEPT) replacing Digital Service Tax · Introduced minimum top-up tax of 15% for multinationals · SHIF and housing levy contributions made tax-deductible</span>
     <a href="https://bowmanslaw.com/insights/kenya-the-president-assents-the-tax-laws-amendment-bill-and-the-tax-procedures-amendment-bill-2024-into-law/" target="_blank" class="pw-source-link">Source: Bowmans ↗</a>
   </div>
 </div>
 
-<!-- ── TAX PROCEDURES (AMENDMENT) (No. 2) BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Taratibu za Kodi (Na. 2), 2024. Umepitishwa kuwa sheria. Umeruhusu msamaha wa kodi hadi Juni 2025.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Tax Procedures (Amendment) (No. 2) Bill, 2024</div>
@@ -168,14 +189,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Amends the Tax Procedures Act · Restored provisions allowing tax relief in cases of difficulty or doubt in recovery · Introduced tax amnesty until Jun 2025 · Integrates electronic tax systems with iTax for improved compliance</span>
     <a href="https://www.rsm.global/kenya/news/rsmea-newsletter-overview-tax-laws-and-tax-procedures-amendment-acts-2024" target="_blank" class="pw-source-link">Source: RSM Kenya ↗</a>
   </div>
 </div>
 
-<!-- ── BUSINESS LAWS (AMENDMENT) BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Sheria za Biashara, 2024. Umepitishwa kuwa sheria. Unaimarisha uthabiti wa kifedha na kulinda waweka amana.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Business Laws (Amendment) Bill, 2024</div>
@@ -183,6 +204,7 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Amends various Acts to boost financial stability, protect depositors and promote integrity in the financial sector · Amends Kenya Accreditation Service Act for mandatory accreditation of conformity assessment institutions · Amends Special Economic Zones Act on minimum investment thresholds</span>
     <a href="https://www.president.go.ke/president-ruto-signs-parliamentary-bills-to-boost-beta/" target="_blank" class="pw-source-link">Source: President's Office ↗</a>
@@ -190,11 +212,10 @@
 </div>
 
 <!-- ═══════════════════════════════════════ -->
-<div class="section-label">Housing, Land &amp; Infrastructure</div>
+<div class="section-label" id="group-housing">Housing, Land &amp; Infrastructure</div>
 <!-- ═══════════════════════════════════════ -->
 
-<!-- ── AFFORDABLE HOUSING ACT, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Sheria ya Nyumba Nafuu, 2024. Imepitishwa kuwa sheria. Ushuru wa nyumba umewekwa asilimia 1.5 kwa mfanyakazi na asilimia 1.5 kwa mwajiri.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Affordable Housing Act, 2024</div>
@@ -202,14 +223,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Enacted following High Court ruling Nov 2023 that rendered the Finance Act 2023 housing levy unconstitutional · Establishes Affordable Housing Fund and Board · Levy set at 1.5% employee + 1.5% employer of gross salary · KRA appointed as collecting agent · Effective March 2024</span>
     <a href="https://kpmg.com/ke/en/home/insights/2024/03/the-affordable-housing-act-2024.html" target="_blank" class="pw-source-link">Source: KPMG ↗</a>
   </div>
 </div>
 
-<!-- ── NATIONAL RATING BILL, 2022 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Kitaifa wa Ukadiriaji, 2022. Umepitishwa kuwa sheria. Unatoa mfumo wa kisasa wa ukadiriaji wa mali na kodi ya ardhi.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">National Rating Bill, 2022</div>
@@ -217,14 +238,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Provides a modern framework for property rating (property taxes) in Kenya · Assented alongside the Division of Revenue (Amendment) Bill and Water (Amendment) Bill</span>
     <a href="https://www.president.go.ke/president-ruto-assents-to-parliamentary-bills/" target="_blank" class="pw-source-link">Source: President's Office ↗</a>
   </div>
 </div>
 
-<!-- ── WATER (AMENDMENT) BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Maji, 2024. Umepitishwa kuwa sheria. Unaruhusu ushirikiano wa serikali na sekta binafsi katika miradi ya maji.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Water (Amendment) Bill, 2024</div>
@@ -232,14 +253,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Provides for public-private partnerships in financing the development of water works by National Government agencies · Signed alongside Division of Revenue (Amendment) Bill and National Rating Bill</span>
     <a href="https://www.president.go.ke/president-ruto-assents-to-parliamentary-bills/" target="_blank" class="pw-source-link">Source: President's Office ↗</a>
   </div>
 </div>
 
-<!-- ── KENYA ROADS (AMENDMENT) BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Barabara za Kenya, 2024. Umepitishwa kuwa sheria. Sehemu ya mswada saba wa BETA kuharakisha maendeleo ya kiuchumi.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Kenya Roads (Amendment) Bill, 2024</div>
@@ -247,6 +268,7 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Part of the seven-bill BETA package signed 11 Dec 2024 · Amends the Kenya Roads Act to accelerate the Bottom-Up Economic Transformation Agenda · Signed alongside KRA Amendment, EACC Amendment, Tax Laws Amendment and others</span>
     <a href="https://www.president.go.ke/president-ruto-signs-parliamentary-bills-to-boost-beta/" target="_blank" class="pw-source-link">Source: President's Office ↗</a>
@@ -254,11 +276,10 @@
 </div>
 
 <!-- ═══════════════════════════════════════ -->
-<div class="section-label">Governance &amp; Public Administration</div>
+<div class="section-label" id="group-gov">Governance &amp; Public Administration</div>
 <!-- ═══════════════════════════════════════ -->
 
-<!-- ── CONFLICT OF INTEREST BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Mgongano wa Maslahi, 2024. Umepitishwa kuwa sheria. Unahitaji viongozi kutangaza mali zao na kujiepusha na mgongano wa maslahi.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Conflict of Interest Bill, 2024</div>
@@ -266,14 +287,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Sponsored by Majority Leader Kimani Ichung'wah · Requires declaration of assets &amp; mandatory recusal from conflicts of interest · Repeals Public Officer Ethics Act · Mediation required after Senate amendments</span>
     <a href="https://parliament.go.ke/node/24317" target="_blank" class="pw-source-link">Source: Parliament ↗</a>
   </div>
 </div>
 
-<!-- ── STATUTE LAW (MISCELLANEOUS AMENDMENTS) BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho Mbalimbali ya Sheria za Kisheria, 2024. Umepitishwa kuwa sheria. Umerekebisha sheria kumi na sita kwa mara moja.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Statute Law (Miscellaneous Amendments) Bill, 2024</div>
@@ -281,14 +302,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Omnibus amendments to 16 Acts · Key changes: AG's Office advisory board for State counsel appointments; industrial training levy aligned with PAYE; judiciary oaths administration reforms; Advocates Act updates; VAT exemption removed for denatured ethanol; Universities Act amended to allow specialised degree institutions</span>
     <a href="https://www.president.go.ke/president-ruto-signs-into-law-the-statute-law-bill-2024/" target="_blank" class="pw-source-link">Source: President's Office ↗</a>
   </div>
 </div>
 
-<!-- ── KENYA REVENUE AUTHORITY (AMENDMENT) BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Mamlaka ya Mapato Kenya, 2024. Umepitishwa kuwa sheria. Unaruhusu Kamishna Mkuu kuteua Makamishna Wasaidizi.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Kenya Revenue Authority (Amendment) Bill, 2024</div>
@@ -296,14 +317,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Provides for appointment of KRA Deputy Commissioners by the Commissioner-General subject to Board approval · Empowers the National Treasury CS to waive penalties for agents who inadvertently fail to transfer collected funds · Part of the BETA seven-bill package</span>
     <a href="https://www.president.go.ke/president-ruto-signs-parliamentary-bills-to-boost-beta/" target="_blank" class="pw-source-link">Source: President's Office ↗</a>
   </div>
 </div>
 
-<!-- ── ETHICS AND ANTI-CORRUPTION COMMISSION (AMENDMENT) BILL, 2024 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Tume ya Maadili na Kupambana na Ufisadi, 2024. Umepitishwa kuwa sheria. Unaimarisha mifumo ya kupambana na rushwa.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Ethics and Anti-Corruption Commission (Amendment) Bill, 2024</div>
@@ -311,14 +332,14 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Amends the EACC Act to strengthen anti-corruption frameworks · Part of the BETA seven-bill package signed 11 Dec 2024</span>
     <a href="https://www.president.go.ke/president-ruto-signs-parliamentary-bills-to-boost-beta/" target="_blank" class="pw-source-link">Source: President's Office ↗</a>
   </div>
 </div>
 
-<!-- ── STATUTORY INSTRUMENTS (AMENDMENT) BILL, 2023 ── -->
-<div class="pw-vote-card card-passed">
+<div class="pw-vote-card card-passed" data-sw="Mswada wa Marekebisho ya Vyombo vya Kisheria, 2023. Umepitishwa kuwa sheria. Unarahisisha mchakato wa sheria ndogo ndogo.">
   <div class="pw-vote-header">
     <div>
       <div class="pw-vote-title">Statutory Instruments (Amendment) Bill, 2023</div>
@@ -326,11 +347,150 @@
     </div>
     <span class="pw-bill-stage stage-assent">Passed</span>
   </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
   <div class="pw-vote-footer">
     <span class="pw-vote-footnote">Introduced in 2023 but assented as part of the BETA package on 11 Dec 2024 · Amends the Statutory Instruments Act to streamline subsidiary legislation processes</span>
     <a href="https://www.president.go.ke/president-ruto-signs-parliamentary-bills-to-boost-beta/" target="_blank" class="pw-source-link">Source: President's Office ↗</a>
   </div>
 </div>
+
+<script>
+let billsKiswahili = false;
+let billsSelectedVoice = null;
+let billsMatchedVoices = [];
+let billsCurrentUtterance = null;
+let billsPlayingAll = false;
+let billsPlayQueue = [];
+
+const billsVoiceOptions = [
+  { match: 'Zira',   label: 'Female',   lang: 'en' },
+  { match: 'Mark',   label: 'Male',     lang: 'en' },
+  { match: 'Rafiki', label: 'Mwanaume', lang: 'sw' },
+  { match: 'Zuri',   label: 'Mwanamke', lang: 'sw' }
+];
+
+function billsLoadVoices(){
+  const voices = window.speechSynthesis.getVoices();
+  const picker = document.getElementById('bills-voice-picker');
+  if (!picker || voices.length === 0) return;
+
+  const currentLang = billsKiswahili ? 'sw' : 'en';
+  picker.innerHTML = '';
+
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = 'Voice / Sauti';
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  picker.appendChild(placeholder);
+
+  billsMatchedVoices = [];
+  billsVoiceOptions
+    .filter(w => w.lang === currentLang)
+    .forEach(w => {
+      const voice = voices.find(v => v.name.includes(w.match));
+      if (voice) {
+        billsMatchedVoices.push({ voice, label: w.label });
+        const opt = document.createElement('option');
+        opt.value = billsMatchedVoices.length - 1;
+        opt.textContent = w.label;
+        picker.appendChild(opt);
+      }
+    });
+
+  picker.style.display = billsMatchedVoices.length > 0 ? 'inline-block' : 'none';
+  picker.onchange = () => {
+    if (picker.value === '') { billsSelectedVoice = null; return; }
+    billsSelectedVoice = billsMatchedVoices[picker.value].voice;
+  };
+  billsSelectedVoice = billsMatchedVoices[0] ? billsMatchedVoices[0].voice : null;
+}
+
+window.speechSynthesis.onvoiceschanged = billsLoadVoices;
+billsLoadVoices();
+
+function toggleBillsLang(){
+  billsKiswahili = !billsKiswahili;
+  const btn = document.getElementById('bills-lang-btn');
+  btn.classList.toggle('on', billsKiswahili);
+  btn.textContent = billsKiswahili ? '🌐 English' : '🌐 Kiswahili';
+  billsLoadVoices();
+}
+
+function billsCardText(card){
+  if (billsKiswahili) {
+    return card.getAttribute('data-sw') || card.querySelector('.pw-vote-title').textContent.trim();
+  }
+  const title = card.querySelector('.pw-vote-title')?.textContent.trim() || '';
+  const meta = card.querySelector('.pw-vote-meta')?.textContent.trim() || '';
+  const footnote = card.querySelector('.pw-vote-footnote')?.textContent.trim() || '';
+  return [title, meta, footnote].filter(Boolean).join('. ');
+}
+
+function speakBillsText(text, onEnd){
+  const utterance = new SpeechSynthesisUtterance(text);
+  if (billsSelectedVoice) utterance.voice = billsSelectedVoice;
+  else utterance.lang = billsKiswahili ? 'sw-KE' : 'en-US';
+  utterance.onend = onEnd;
+  utterance.onerror = onEnd;
+  billsCurrentUtterance = utterance;
+  speechSynthesis.speak(utterance);
+}
+
+function readBillCard(btn){
+  const card = btn.closest('.pw-vote-card');
+  const wasSpeaking = btn.classList.contains('speaking');
+  stopBillsPlayAll();
+  speechSynthesis.cancel();
+  document.querySelectorAll('.card-listen-btn.speaking').forEach(b => b.classList.remove('speaking'));
+  if (wasSpeaking) return;
+
+  setTimeout(() => {
+    btn.classList.add('speaking');
+    speakBillsText(billsCardText(card), () => btn.classList.remove('speaking'));
+  }, 50);
+}
+
+function toggleBillsPlayAll(){
+  if (billsPlayingAll) { stopBillsPlayAll(); return; }
+  speechSynthesis.cancel();
+  document.querySelectorAll('.card-listen-btn.speaking').forEach(b => b.classList.remove('speaking'));
+
+  billsPlayingAll = true;
+  billsPlayQueue = Array.from(document.querySelectorAll('.pw-vote-card'));
+  const playBtn = document.getElementById('bills-play-btn');
+  playBtn.textContent = '⏹ Stop';
+  playBtn.classList.add('playing');
+
+  setTimeout(playNextBillsCard, 50);
+}
+
+function playNextBillsCard(){
+  if (!billsPlayingAll || billsPlayQueue.length === 0) { stopBillsPlayAll(); return; }
+  const card = billsPlayQueue.shift();
+  const listenBtn = card.querySelector('.card-listen-btn');
+  listenBtn.classList.add('speaking');
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  speakBillsText(billsCardText(card), () => {
+    listenBtn.classList.remove('speaking');
+    if (billsPlayingAll) setTimeout(playNextBillsCard, 300);
+  });
+}
+
+function stopBillsPlayAll(){
+  billsPlayingAll = false;
+  billsPlayQueue = [];
+  const playBtn = document.getElementById('bills-play-btn');
+  playBtn.textContent = '▶ Play All Bills';
+  playBtn.classList.remove('playing');
+  document.querySelectorAll('.card-listen-btn.speaking').forEach(b => b.classList.remove('speaking'));
+}
+
+function scrollToBillsGroup(id){
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
 
 </body>
 </html>

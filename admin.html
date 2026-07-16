@@ -9,26 +9,31 @@
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">Sauti ya <span>Wananchi</span></div>
     <div class="login-sub">Admin Panel — restricted access</div>
     <label class="login-label">Username</label>
-    <input class="login-input" type="text" id="login-user" placeholder="admin" />
+    <input class="login-input" type="text" id="login-user" placeholder="admin" onkeydown="if(event.key==='Enter')doLogin()" />
     <label class="login-label">Password</label>
-    <input class="login-input" type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
-    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div style="position:relative">
+      <input class="login-input" type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:60px" />
+      <button type="button" onclick="toggleAdminPass(this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#888;font-size:11px;font-weight:600;letter-spacing:0.04em;cursor:pointer">SHOW</button>
+    </div>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Sign In →</button>
     <div class="login-error" id="login-error">Incorrect username or password.</div>
+    <div style="text-align:center;margin-top:1rem">
+      <a href="login.html" style="font-size:12px;color:#888;text-decoration:none">← Back to site</a>
+    </div>
   </div>
 </div>
-
 <!-- ADMIN PANEL -->
 <div id="admin-panel">
   <nav class="admin-nav">
     <div class="admin-nav-logo">Sauti ya <span>Wananchi</span> — Admin</div>
     <div class="admin-nav-right">
       <span class="admin-badge">🔒 Admin</span>
+      <a href="admin_results.php" class="admin-badge" style="text-decoration:none;">📊 Vote Results</a>
       <a href="index.html" style="font-size:13px;color:#888;text-decoration:none">← Back to site</a>
       <button class="logout-btn" onclick="doLogout()">Log out</button>
     </div>
@@ -49,6 +54,88 @@
         <div class="kpi-sub">Comments today</div>
       </div>
     </div>
+
+    <!-- OFFICIAL REGISTRATIONS -->
+<div class="toolbar">
+  <div class="toolbar-left">
+    <span class="section-title">Official Registrations</span>
+  </div>
+</div>
+
+<div class="officials-tabs">
+  <button class="officials-tab active" id="tab-officials-pending" onclick="switchOfficialsTab('pending')">Pending</button>
+  <button class="officials-tab" id="tab-officials-approved" onclick="switchOfficialsTab('approved')">Approved</button>
+  <button class="officials-tab" id="tab-officials-rejected" onclick="switchOfficialsTab('rejected')">Rejected</button>
+</div>
+
+<div class="table-wrap" style="margin-bottom:2rem">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Office ID</th>
+        <th>County / Constituency</th>
+        <th>Registered</th>
+        <th id="officials-action-header">Action</th>
+      </tr>
+    </thead>
+    <tbody id="officials-tbody">
+      <tr><td colspan="6"><div class="loading">Loading…</div></td></tr>
+    </tbody>
+  </table>
+</div>
+    
+<!-- PENDING COMMENT DELETIONS -->
+<div class="toolbar">
+  <div class="toolbar-left">
+    <span class="section-title">Pending Comment Deletions</span>
+  </div>
+  <button class="refresh-btn" onclick="loadPendingDeletions()">↻ Refresh</button>
+</div>
+
+<div class="table-wrap" style="margin-bottom:2rem">
+  <table>
+    <thead>
+      <tr>
+        <th>Comment</th>
+        <th>Bill</th>
+        <th>Flagged By</th>
+        <th>Reason</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="pending-deletions-tbody">
+      <tr><td colspan="5"><div class="loading">Loading…</div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PENDING BILL & TAX CHANGES -->
+<div class="toolbar">
+  <div class="toolbar-left">
+    <span class="section-title">Pending Bill &amp; Tax Changes</span>
+  </div>
+  <button class="refresh-btn" onclick="loadPendingChanges()">↻ Refresh</button>
+</div>
+
+<div class="table-wrap" style="margin-bottom:2rem">
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Bill</th>
+        <th>Details</th>
+        <th>Proposed By</th>
+        <th>Proposed</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="pending-changes-tbody">
+      <tr><td colspan="6"><div class="loading">Loading…</div></td></tr>
+    </tbody>
+  </table>
+</div>
 
     <!-- TABLE -->
     <div class="toolbar">
