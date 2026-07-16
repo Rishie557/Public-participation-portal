@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 session_start();
-require 'db_connect.php';
+require 'config/db_connect.php';
 
 if (empty($_SESSION['user_id'])) {
     http_response_code(401);

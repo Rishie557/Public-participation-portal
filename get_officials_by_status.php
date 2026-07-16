@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 require 'admin_session_check.php';
-require 'db_connect.php';
+require 'config/db_connect.php';
 
 $allowed = ['pending', 'approved', 'rejected'];
 $status = $_GET['status'] ?? 'pending';

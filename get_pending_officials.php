@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 require 'admin_session_check.php';
-require 'db_connect.php';
+require 'config/db_connect.php';
 
 $sql = "SELECT u.id AS user_id, u.full_name, u.phone, u.email,
                u.county_name, u.constituency_name, u.office_id_number,
