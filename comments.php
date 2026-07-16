@@ -1,4 +1,4 @@
-<?php require 'auth_gate.php'; ?>
+<?php require 'auth/auth_gate.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +20,7 @@
     <a href="comments.php" class="nav-cta">Comments</a>
     <div class="nav-account">
       <span class="nav-account-name">Hi, <?= htmlspecialchars($_SESSION['full_name']) ?></span>
-      <a href="logout.php" class="nav-logout">Log out</a>
+      <a href="auth/logout.php" class="nav-logout">Log out</a>
     </div>
   </div>
 </nav>

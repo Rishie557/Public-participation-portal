@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 session_start();
-require 'config/db_connect.php';
+require '../config/db_connect.php';
 
 $data          = json_decode(file_get_contents('php://input'), true);
 $identifier    = trim($data['identifier'] ?? '');   // phone or email

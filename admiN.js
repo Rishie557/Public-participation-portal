@@ -22,7 +22,7 @@ async function doLogin() {
   btn.textContent = 'Signing in…';
 
   try {
-    const res = await fetch('admin_login.php', {
+    const res = await fetch('auth/admin_login.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: u, password: p })
@@ -44,7 +44,7 @@ async function doLogin() {
 
 async function doLogout() {
   try {
-    await fetch('admin_logout.php', { method: 'POST' });
+    await fetch('auth/admin_logout.php', { method: 'POST' });
   } catch (err) {
     console.error(err);
   }

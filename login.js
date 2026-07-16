@@ -124,7 +124,7 @@ async function handleSignIn(e){
   errorBox.classList.remove('show');
 
   try{
-    const res = await fetch('login.php', {
+    const res = await fetch('auth/login.php', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ identifier, password, role })
@@ -183,7 +183,7 @@ async function handleRegister(e){
   };
 
   try{
-    const res = await fetch('register.php', {
+    const res = await fetch('auth/register.php', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(payload)
