@@ -1,6 +1,6 @@
 <?php
-require 'admin_session_check.php';
-require 'config/db_connect.php';
+require __DIR__ . '/../auth/admin_session_check.php';
+require __DIR__ . '/../config/db_connect.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $id = $data['id'] ?? null;
