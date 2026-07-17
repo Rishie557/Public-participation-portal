@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 session_start();
-require 'config/db_connect.php';
+require __DIR__ . '/../config/db_connect.php';
 
 if (empty($_SESSION['user_id']) || empty($_SESSION['role']) || $_SESSION['role'] !== 'official') {
     http_response_code(403);
