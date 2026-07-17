@@ -25,17 +25,17 @@
     <div class="dropdown">
     <button class="dropbtn">TRANSPARENCY </button>
     <div class="dropdown-content">
-        <a href="Spend2024.html">2024 SPEND</a>
-        <a href="Spend2025.html">2025 SPEND</a>
-        <a href="Spend2026.html">2026 SPEND</a>
+        <a href="../spend/Spend2024.html">2024 SPEND</a>
+        <a href="../spend/Spend2025.html">2025 SPEND</a>
+        <a href="../spend/Spend2026.html">2026 SPEND</a>
     </div>
 </div>
     <div class="dropdown">
     <button class="dropbtn">BILLS</button>
     <div class="dropdown-content">
-        <a href="Bills2024.html">Bills 2024</a>
-        <a href="Bills2025.html">Bills 2025</a>
-        <a href="Bills2026.html">Bills 2026</a>
+        <a href="../bills/Bills2024.html">Bills 2024</a>
+        <a href="../bills/Bills2025.html">Bills 2025</a>
+        <a href="../bills/Bills2026.html">Bills 2026</a>
     </div>
 </div>
     <a href="index.php#advocacy">Advocacy</a>

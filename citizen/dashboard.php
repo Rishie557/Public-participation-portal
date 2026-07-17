@@ -95,9 +95,9 @@
       <div class="dash-label">BILLS</div>
       <div class="dash-sub">Miswada / Read new laws</div>
       <div class="dash-year-menu" id="bills-menu" onclick="event.stopPropagation()">
-        <a href="Bills2026.html">2026 BILLS</a>
-        <a href="Bills2025.html">2025 BILLS</a>
-        <a href="Bills2024.html">2024 BILLS</a>
+        <a href="../bills/Bills2026.html">2026 BILLS</a>
+        <a href="../bills/Bills2025.html">2025 BILLS</a>
+        <a href="../bills/Bills2024.html">2024 BILLS</a>
       </div>
     </div>
 
@@ -108,9 +108,9 @@
       <div class="dash-label">TRANSPARENCY</div>
       <div class="dash-sub">Matumizi / Track spending</div>
       <div class="dash-year-menu" id="spend-menu" onclick="event.stopPropagation()">
-        <a href="Spend2026.html">2026 SPEND</a>
-        <a href="Spend2025.html">2025 SPEND</a>
-        <a href="Spend2024.html">2024 SPEND</a>
+        <a href="../spend/Spend2026.html">2026 SPEND</a>
+        <a href="../spend/Spend2025.html">2025 SPEND</a>
+        <a href="../spend/Spend2024.html">2024 SPEND</a>
       </div>
     </div>
 
