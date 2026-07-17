@@ -407,3 +407,25 @@ body.big-text .comment-input,body.big-text .comment-submit-btn{font-size:15px}
 .official-field-label{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em}
 
 body.big-text .official-danger-note{font-size:14px}
+
+/* ══════════════════════════════════════════════════════════
+   OFFICIAL DASHBOARD — TABS
+   ══════════════════════════════════════════════════════════ */
+.official-tabs{display:flex;gap:8px;margin-bottom:2rem;border-bottom:1px solid var(--gray-light);flex-wrap:wrap}
+.official-tab{background:none;border:none;padding:12px 20px;font-size:14px;font-weight:600;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;font-family:'DM Sans',sans-serif;letter-spacing:0.02em;transition:all .15s}
+.official-tab:hover{color:var(--black)}
+.official-tab.active{color:var(--green);border-bottom-color:var(--green)}
+
+.official-tab-panel{display:none}
+.official-tab-panel.active{display:block}
+
+/* ── Pending Reviews list ── */
+.proposal-item{background:#fff;border:1px solid var(--gray-light);border-radius:6px;padding:1rem 1.25rem;margin-bottom:12px}
+.proposal-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.proposal-type{font-weight:700;font-size:14px;font-family:'Playfair Display',serif}
+.proposal-status{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;padding:3px 10px;border-radius:12px;white-space:nowrap}
+.status-pending{background:var(--gold-pale);color:#7a5a10}
+.status-approved{background:var(--green-pale);color:var(--green)}
+.status-rejected{background:var(--red-pale);color:var(--red)}
+.proposal-detail{font-size:13px;color:var(--gray);line-height:1.5}
+.proposal-detail strong{color:var(--black)}

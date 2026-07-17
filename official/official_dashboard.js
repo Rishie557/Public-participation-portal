@@ -13,7 +13,83 @@ const OFFICIAL_BILLS = [
   { slug: 'culture-bill', title: 'Culture Bill, 2024', status: 'In Progress' },
   { slug: 'health-amendment', title: 'Health (Amendment) Bill', status: 'In Progress' },
 ];
+// ── Tab switching ──────────────────────────────────────────
+const OFFICIAL_TABS = ['bills', 'propose', 'reviews'];
+const loadedTabs = new Set();
 
+function switchOfficialTab(tab) {
+  OFFICIAL_TABS.forEach(t => {
+    document.getElementById(`tab-panel-${t}`).classList.toggle('active', t === tab);
+    document.querySelector(`.official-tab[data-tab="${t}"]`).classList.toggle('active', t === tab);
+  });
+
+  if (tab === 'propose' && !loadedTabs.has('propose')) {
+    renderNewBillPanel();
+    loadedTabs.add('propose');
+  }
+  if (tab === 'reviews') {
+    loadPendingReviews();
+  }
+}
+
+// ── Pending Reviews ─────────────────────────────────────────
+async function loadPendingReviews() {
+  const panel = document.getElementById('tab-panel-reviews');
+  panel.innerHTML = '<p style="color:#888;">Loading your proposals...</p>';
+
+  try {
+    const res = await fetch('get_my_proposals.php');
+    const proposals = await res.json();
+
+    if (!res.ok) {
+      panel.innerHTML = `<p style="color:#bb0000;">${proposals.error || 'Could not load proposals.'}</p>`;
+      return;
+    }
+
+    if (!Array.isArray(proposals) || proposals.length === 0) {
+      panel.innerHTML = '<p class="no-comments">You haven\'t submitted any proposals yet.</p>';
+      return;
+    }
+
+    panel.innerHTML = proposals.map(renderProposalItem).join('');
+  } catch (err) {
+    panel.innerHTML = '<p style="color:#bb0000;">Could not load proposals.</p>';
+    console.error(err);
+  }
+}
+
+function renderProposalItem(p) {
+  const typeLabels = {
+    add_bill: '➕ New Bill Proposal',
+    remove_bill: '🗑️ Bill Removal Request',
+    edit_tax_spend: '✏️ Tax/Spend Update',
+  };
+  const statusClass = `status-${p.status}`;
+  const statusLabel = p.status.charAt(0).toUpperCase() + p.status.slice(1);
+
+  let detail = '';
+  if (p.change_type === 'add_bill') {
+    detail = `<strong>${escapeHtml(p.payload.title || '')}</strong> (${escapeHtml(p.payload.slug || '')}) — ${escapeHtml(p.payload.bill_status || '')}`;
+  } else if (p.change_type === 'remove_bill') {
+    detail = `Bill: <strong>${escapeHtml(p.bill_slug)}</strong>`;
+  } else if (p.change_type === 'edit_tax_spend') {
+    detail = `Bill: <strong>${escapeHtml(p.bill_slug)}</strong> — Year ${escapeHtml(String(p.payload.year || ''))}, Amount ${escapeHtml(String(p.payload.amount || ''))}`;
+    if (p.payload.notes) detail += ` — ${escapeHtml(p.payload.notes)}`;
+  }
+
+  const reviewedNote = p.reviewed_at ? `<div class="proposal-detail" style="margin-top:4px;">Reviewed: ${escapeHtml(p.reviewed_at)}</div>` : '';
+
+  return `
+    <div class="proposal-item">
+      <div class="proposal-header">
+        <span class="proposal-type">${typeLabels[p.change_type] || p.change_type}</span>
+        <span class="proposal-status ${statusClass}">${statusLabel}</span>
+      </div>
+      <div class="proposal-detail">${detail}</div>
+      ${reviewedNote}
+    </div>
+  `;
+}
 async function loadOfficialBills() {
   const grid = document.getElementById('official-bills-grid');
   grid.innerHTML = '<p style="color:#888;">Loading...</p>';
@@ -230,23 +306,13 @@ function showToast(msg, isError = false) {
 }
 
 document.addEventListener('DOMContentLoaded', loadOfficialBills);
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('propose-new-bill-toggle');
-  if (btn) btn.addEventListener('click', toggleNewBillPanel);
-});
 
-function toggleNewBillPanel() {
-  const panel = document.getElementById('propose-new-bill-panel');
-  const isOpen = panel.style.display !== 'none';
-  panel.style.display = isOpen ? 'none' : 'block';
-  if (!isOpen) renderNewBillPanel();
-}
 
 function renderNewBillPanel() {
-  const panel = document.getElementById('propose-new-bill-panel');
+  const panel = document.getElementById('tab-panel-propose');
   panel.innerHTML = `
     <h4 class="comments-title">➕ Propose a New Bill</h4>
-    <div class="comment-form" style="display:flex;flex-direction:column;gap:8px;">
+    <div class="comment-form" style="display:flex;flex-direction:column;gap:8px;max-width:500px;">
       <input class="comment-input" id="new-bill-slug" placeholder="Slug (e.g. water-bill-2026)" />
       <input class="comment-input" id="new-bill-title" placeholder="Title" />
       <input class="comment-input" id="new-bill-status" placeholder="Status label (e.g. In Progress)" />
@@ -277,7 +343,10 @@ async function submitNewBill() {
     if (!res.ok || result.error) throw new Error(result.error || 'Could not submit.');
 
     showToast('✓ New bill submitted for admin review.');
-    document.getElementById('propose-new-bill-panel').style.display = 'none';
+    document.getElementById('new-bill-slug').value = '';
+    document.getElementById('new-bill-title').value = '';
+    document.getElementById('new-bill-status').value = '';
+    document.getElementById('new-bill-group').value = '';
   } catch (err) {
     showToast(err.message, true);
   }

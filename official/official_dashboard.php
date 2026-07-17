@@ -31,10 +31,20 @@
     <h2 class="section-title">Bill Results &amp; Docket</h2>
     <p class="section-sub">You can view results for every bill. Bills in your docket also let you post an official response and moderate citizen comments.</p>
 
-    <button class="btn-vote btn-vote-yes" id="propose-new-bill-toggle" style="margin-bottom:1rem;">➕ Propose New Bill</button>
-    <div class="comments-section" id="propose-new-bill-panel" style="display:none;"></div>
+    <div class="official-tabs">
+      <button class="official-tab active" data-tab="bills" onclick="switchOfficialTab('bills')">📋 Bills &amp; Docket</button>
+      <button class="official-tab" data-tab="propose" onclick="switchOfficialTab('propose')">➕ Propose New Bill</button>
+      <button class="official-tab" data-tab="reviews" onclick="switchOfficialTab('reviews')">🕒 Pending Reviews</button>
+    </div>
 
-    <div class="vote-grid" id="official-bills-grid"></div>
+    <div class="official-tab-panel active" id="tab-panel-bills">
+      <div class="vote-grid" id="official-bills-grid"></div>
+    </div>
+
+    <div class="official-tab-panel" id="tab-panel-propose"></div>
+
+    <div class="official-tab-panel" id="tab-panel-reviews"></div>
+
   </div>
 </section>
 
