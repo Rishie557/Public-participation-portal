@@ -1,4 +1,4 @@
-<?php require 'auth/auth_gate.php'; ?>
+<?php require __DIR__ . '/../auth/auth_gate.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vote 2026 — Sauti ya Wananchi</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
 
@@ -43,7 +43,7 @@
     <a href="Votes.php" class="nav-cta">Cast Your Vote</a>
     <div class="nav-account">
       <span class="nav-account-name">Hi, <?= htmlspecialchars($_SESSION['full_name']) ?></span>
-      <a href="auth/logout.php" class="nav-logout">Log out</a>
+      <a href="../auth/logout.php" class="nav-logout">Log out</a>
     </div>
   </div>
 </nav>
@@ -503,6 +503,6 @@
 </footer>
 
 <div class="toast" id="toast"></div>
-<script src="script.js"></script>
+<script src="../script.js"></script>
 </body>
 </html>

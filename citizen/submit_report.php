@@ -1,5 +1,5 @@
 <?php
-require 'config/db_connect.php';
+require __DIR__ . '/../config/db_connect.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $description = $data['description'] ?? '';

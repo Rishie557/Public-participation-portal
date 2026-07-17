@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 session_start();
-require 'config/db_connect.php';
+require __DIR__ . '/../config/db_connect.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $slugs = $data['slugs'] ?? [];

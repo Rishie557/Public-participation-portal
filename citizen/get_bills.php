@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require 'config/db_connect.php';
+require __DIR__ . '/../config/db_connect.php';
 
 $result = $conn->query(
     "SELECT slug, title, bill_status, group_label

@@ -1,4 +1,4 @@
-<?php require 'auth/auth_gate.php'; ?>
+<?php require __DIR__ . '/../auth/auth_gate.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Dashboard — Sauti ya Wananchi</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="../style.css" />
 <style>
   #dash-section{background:var(--black);min-height:100vh;padding:2rem 1.5rem 4rem}
   .dash-welcome{text-align:center;margin:2rem 0 3rem}
@@ -69,7 +69,7 @@
   </div>
   <div class="nav-links">
     <span class="nav-account-name">Hi, <?= htmlspecialchars($_SESSION['full_name']) ?></span>
-    <a href="auth/logout.php" class="nav-logout">Log out</a>
+    <a href="../auth/logout.php" class="nav-logout">Log out</a>
   </div>
 </nav>
 
@@ -131,7 +131,7 @@
 </section>
 
 <div class="toast" id="toast"></div>
-<script src="script.js"></script>
+<script src="../script.js"></script>
 <script>
 let dashKiswahili = false;
 let dashSelectedVoice = null;

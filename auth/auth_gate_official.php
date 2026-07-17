@@ -3,7 +3,7 @@ session_start();
 require __DIR__ .  '/../config/db_connect.php';
 
 if (empty($_SESSION['user_id'])) {
-    header('Location: login.html');
+    header('Location: ../login.html');
     exit;
 }
 

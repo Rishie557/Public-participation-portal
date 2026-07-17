@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 session_start();
-require 'config/db_connect.php';
+require __DIR__ . '/../config/db_connect.php';
 
 $bill_slug = trim($_GET['bill_slug'] ?? '');
 
