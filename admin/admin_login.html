@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — Sauti ya Wananchi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Admin.css" />
+</head>
+<body>
+
+<div id="login-screen">
+
+  <div class="site-topbar">
+    <div class="site-logo">
+      <div class="site-logo-mark">SW</div>
+      <div class="site-logo-text">Sauti ya <span>Wananchi</span></div>
+    </div>
+  </div>
+  <div class="header-line"></div>
+
+  <div class="login-content">
+
+    <div class="login-eyebrow">
+      <span class="status-dot"></span>
+      GOVERNMENT ADMINISTRATION ACCESS
+    </div>
+
+    <h1 class="login-heading">Sign in to the admin panel</h1>
+    <p class="login-desc">Manage legislation, officials, citizen reports, voting records and public participation.</p>
+
+    <div class="login-tabs">
+      <span class="login-tab active">ADMINISTRATOR</span>
+    </div>
+
+    <label class="login-label">Username</label>
+    <input class="login-input" type="text" id="login-user" placeholder="Enter username" onkeydown="if(event.key==='Enter')doLogin()">
+
+    <label class="login-label">Password</label>
+    <div class="password-wrap">
+      <input class="login-input" type="password" id="login-pass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
+      <button type="button" class="show-password-btn" onclick="toggleAdminPass(this)">SHOW</button>
+    </div>
+
+    <div class="remember-device">
+      <label><input type="checkbox"> Remember me</label>
+    </div>
+
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="login-error">Incorrect username or password.</div>
+
+    <div class="security-panel">
+      <div>✓ Encrypted Connection</div>
+      <div>✓ Session Monitoring Enabled</div>
+      <div>✓ Administrator Activity Logged</div>
+    </div>
+
+    <div style="text-align:center;margin-top:22px">
+      <a href="../index.php" class="back-link">← Back to Site</a>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="admin_login.js"></script>
+</body>
+</html>

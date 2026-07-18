@@ -9,32 +9,14 @@
 </head>
 <body>
 
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">Sauti ya <span>Wananchi</span></div>
-    <div class="login-sub">Admin Panel — restricted access</div>
-    <label class="login-label">Username</label>
-    <input class="login-input" type="text" id="login-user" placeholder="admin" onkeydown="if(event.key==='Enter')doLogin()" />
-    <label class="login-label">Password</label>
-    <div style="position:relative">
-      <input class="login-input" type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:60px" />
-      <button type="button" onclick="toggleAdminPass(this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#888;font-size:11px;font-weight:600;letter-spacing:0.04em;cursor:pointer">SHOW</button>
-    </div>
-    <button class="login-btn" id="login-btn" onclick="doLogin()">Sign In →</button>
-    <div class="login-error" id="login-error">Incorrect username or password.</div>
-    <div style="text-align:center;margin-top:1rem">
-      <a href="login.html" style="font-size:12px;color:#888;text-decoration:none">← Back to site</a>
-    </div>
-  </div>
-</div>
 <!-- ADMIN PANEL -->
 <div id="admin-panel">
   <nav class="admin-nav">
     <div class="admin-nav-logo">Sauti ya <span>Wananchi</span> — Admin</div>
     <div class="admin-nav-right">
-      <span class="admin-badge">🔒 Admin</span>
-      <a href="admin_results.php" class="admin-badge" style="text-decoration:none;">📊 Vote Results</a>
-      <a href="index.html" style="font-size:13px;color:#888;text-decoration:none">← Back to site</a>
+      <span class="current-page-tag"><span class="current-dot"></span>Admin Panel</span>
+      <a href="admin_results.php" class="nav-action-btn">📊 Vote Results →</a>
+      <a href="../index.php" style="font-size:13px;color:#888;text-decoration:none">← Back to site</a>
       <button class="logout-btn" onclick="doLogout()">Log out</button>
     </div>
   </nav>
@@ -43,20 +25,30 @@
 
     <!-- KPIs -->
     <div class="kpi-row">
-      <div class="kpi-card">
-        <div class="kpi-label">Total Comments</div>
-        <div class="kpi-val green" id="kpi-total">—</div>
-        <div class="kpi-sub">All time submissions</div>
+      <div class="kpi-card kpi-total-card kpi-clickable" onclick="jumpToSection('section-officials')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')jumpToSection('section-officials')">
+        <div class="kpi-label">Total Pending</div>
+        <div class="kpi-val" id="kpi-total-pending">—</div>
+        <div class="kpi-sub">Across all queues</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Today</div>
-        <div class="kpi-val" id="kpi-today">—</div>
-        <div class="kpi-sub">Comments today</div>
+      <div class="kpi-card kpi-clickable" id="kpi-card-officials" onclick="jumpToSection('section-officials')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')jumpToSection('section-officials')">
+        <div class="kpi-label">Registrations<span class="kpi-dot" id="dot-officials"></span></div>
+        <div class="kpi-val" id="kpi-pending-officials">—</div>
+        <div class="kpi-sub">Awaiting approval</div>
+      </div>
+      <div class="kpi-card kpi-clickable" id="kpi-card-deletions" onclick="jumpToSection('section-deletions')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')jumpToSection('section-deletions')">
+        <div class="kpi-label">Comment Deletions<span class="kpi-dot" id="dot-deletions"></span></div>
+        <div class="kpi-val" id="kpi-pending-deletions">—</div>
+        <div class="kpi-sub">Flagged for removal</div>
+      </div>
+      <div class="kpi-card kpi-clickable" id="kpi-card-changes" onclick="jumpToSection('section-changes')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')jumpToSection('section-changes')">
+        <div class="kpi-label">Bill &amp; Tax Changes<span class="kpi-dot" id="dot-changes"></span></div>
+        <div class="kpi-val" id="kpi-pending-changes">—</div>
+        <div class="kpi-sub">Proposed edits</div>
       </div>
     </div>
 
     <!-- OFFICIAL REGISTRATIONS -->
-<div class="toolbar">
+<div class="toolbar" id="section-officials">
   <div class="toolbar-left">
     <span class="section-title">Official Registrations</span>
   </div>
@@ -85,9 +77,9 @@
     </tbody>
   </table>
 </div>
-    
+
 <!-- PENDING COMMENT DELETIONS -->
-<div class="toolbar">
+<div class="toolbar" id="section-deletions">
   <div class="toolbar-left">
     <span class="section-title">Pending Comment Deletions</span>
   </div>
@@ -112,7 +104,7 @@
 </div>
 
 <!-- PENDING BILL & TAX CHANGES -->
-<div class="toolbar">
+<div class="toolbar" id="section-changes">
   <div class="toolbar-left">
     <span class="section-title">Pending Bill &amp; Tax Changes</span>
   </div>

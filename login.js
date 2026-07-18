@@ -308,3 +308,12 @@ function toggleTextSize(){
   document.body.classList.toggle('large-text');
   document.getElementById('btn-text').classList.toggle('on');
 }
+document.addEventListener('DOMContentLoaded', () => {
+  initCountyDropdowns();
+  document.getElementById('reg-county').addEventListener('input', onCountyInput);
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('tab') === 'register') {
+    switchTab('register');
+  }
+});

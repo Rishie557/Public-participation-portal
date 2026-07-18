@@ -1,54 +1,28 @@
-// ── AUTH ──────────────────────────────────────────────────
+// ── KPI SECTION LINKS ─────────────────────────────────────
+function jumpToSection(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const navHeight = document.querySelector('.admin-nav')?.offsetHeight || 0;
+  const top = el.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
+  window.scrollTo({ top, behavior: 'smooth' });
+  el.classList.add('section-flash');
+  setTimeout(() => el.classList.remove('section-flash'), 900);
+}
+
 function escapeHTML(str) {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
 }
 
-function toggleAdminPass(btn) {
-  const input = document.getElementById('login-pass');
-  const hidden = input.type === 'password';
-  input.type = hidden ? 'text' : 'password';
-  btn.textContent = hidden ? 'HIDE' : 'SHOW';
-}
-
-async function doLogin() {
-  const u = document.getElementById('login-user').value.trim();
-  const p = document.getElementById('login-pass').value;
-  const btn = document.getElementById('login-btn');
-  document.getElementById('login-error').style.display = 'none';
-
-  btn.disabled = true;
-  btn.textContent = 'Signing in…';
-
-  try {
-    const res = await fetch('../auth/admin_login.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: u, password: p })
-    });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || 'Login failed');
-
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('admin-panel').style.display = 'block';
-    loadReports();
-    switchOfficialsTab('pending');
-  } catch (err) {
-    document.getElementById('login-error').textContent = err.message;
-    document.getElementById('login-error').style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Sign In →';
-  }
-}
-
+// ── AUTH ──────────────────────────────────────────────────
 async function doLogout() {
   try {
     await fetch('../auth/admin_logout.php', { method: 'POST' });
   } catch (err) {
     console.error(err);
   }
-  location.reload();
+  window.location.href = 'admin_login.html';
 }
 
 // ── STATE ─────────────────────────────────────────────────
@@ -67,7 +41,6 @@ async function loadReports() {
     if (!res.ok) throw new Error('Request failed');
     const data = await res.json();
     allReports = data || [];
-    updateKPIs();
     applyFilters();
   } catch (err) {
     showToast('Failed to load comments.', true);
@@ -75,12 +48,26 @@ async function loadReports() {
   }
 }
 
-// ── KPIs ──────────────────────────────────────────────────
-function updateKPIs() {
-  document.getElementById('kpi-total').textContent = allReports.length;
-  const today = new Date().toISOString().slice(0, 10);
-  document.getElementById('kpi-today').textContent =
-    allReports.filter(r => r.created_at && r.created_at.startsWith(today)).length;
+// ── PENDING KPI COUNTS ────────────────────────────────────
+let pendingOfficialsCount = 0;
+let pendingDeletionsCount = 0;
+let pendingChangesCount = 0;
+
+function updatePendingKPIs() {
+  const total = pendingOfficialsCount + pendingDeletionsCount + pendingChangesCount;
+
+  document.getElementById('kpi-total-pending').textContent = total;
+  document.getElementById('kpi-pending-officials').textContent = pendingOfficialsCount;
+  document.getElementById('kpi-pending-deletions').textContent = pendingDeletionsCount;
+  document.getElementById('kpi-pending-changes').textContent = pendingChangesCount;
+
+  document.getElementById('dot-officials').classList.toggle('on', pendingOfficialsCount > 0);
+  document.getElementById('dot-deletions').classList.toggle('on', pendingDeletionsCount > 0);
+  document.getElementById('dot-changes').classList.toggle('on', pendingChangesCount > 0);
+
+  document.getElementById('kpi-card-officials').classList.toggle('has-pending', pendingOfficialsCount > 0);
+  document.getElementById('kpi-card-deletions').classList.toggle('has-pending', pendingDeletionsCount > 0);
+  document.getElementById('kpi-card-changes').classList.toggle('has-pending', pendingChangesCount > 0);
 }
 
 // ── FILTERS ───────────────────────────────────────────────
@@ -174,7 +161,6 @@ async function deleteReport(id) {
     if (!res.ok || result.error) throw new Error(result.error || 'Delete failed');
     showToast('Comment deleted.');
     allReports = allReports.filter(r => r.id !== id);
-    updateKPIs();
     applyFilters();
   } catch (err) {
     showToast('Delete failed.', true);
@@ -230,6 +216,11 @@ function renderOfficialsTable(officials, status) {
   const tbody = document.getElementById('officials-tbody');
   const actionHeader = document.getElementById('officials-action-header');
   actionHeader.textContent = status === 'pending' ? 'Action' : 'Reviewed';
+
+  if (status === 'pending') {
+    pendingOfficialsCount = officials.length;
+    updatePendingKPIs();
+  }
 
   if (officials.length === 0) {
     const emptyText = status === 'pending' ? 'No pending registrations'
@@ -327,22 +318,40 @@ function showToast(msg, isError = false) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// ── SESSION RESTORE ───────────────────────────────────────
-(async function checkSession() {
+// ── SESSION GUARD ─────────────────────────────────────────
+// This page assumes the admin is already logged in. If there's no valid
+// session (direct link, expired session, etc.), bounce to the login page.
+function initPanel() {
+  document.getElementById('admin-panel').style.display = 'block';
+  loadReports();
+  switchOfficialsTab('pending');
+  loadPendingDeletions();
+  loadPendingChanges();
+}
+
+async function checkSession() {
   try {
     const res = await fetch('admin_check_session.php');
     const result = await res.json();
     if (result.logged_in) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('admin-panel').style.display = 'block';
-      loadReports();
-      switchOfficialsTab('pending');
+      initPanel();
+    } else {
+      window.location.href = 'admin_login.html';
     }
   } catch (err) {
     console.error('Session check failed:', err);
+    window.location.href = 'admin_login.html';
   }
-})();
+}
 
+checkSession();
+
+// Re-check whenever this page is restored from the back/forward cache
+window.addEventListener('pageshow', function (event) {
+  if (event.persisted) checkSession();
+});
+
+// ── PENDING COMMENT DELETIONS ──────────────────────────────
 async function loadPendingDeletions() {
   const tbody = document.getElementById('pending-deletions-tbody');
   tbody.innerHTML = '<tr><td colspan="5"><div class="loading">Loading…</div></td></tr>';
@@ -360,6 +369,8 @@ async function loadPendingDeletions() {
 
 function renderPendingDeletions(pending) {
   const tbody = document.getElementById('pending-deletions-tbody');
+  pendingDeletionsCount = pending.length;
+  updatePendingKPIs();
 
   if (pending.length === 0) {
     tbody.innerHTML = `<tr><td colspan="5">
@@ -403,6 +414,8 @@ async function reviewDeletion(id, action) {
     console.error(err);
   }
 }
+
+// ── PENDING BILL & TAX CHANGES ─────────────────────────────
 async function loadPendingChanges() {
   const tbody = document.getElementById('pending-changes-tbody');
   tbody.innerHTML = '<tr><td colspan="6"><div class="loading">Loading…</div></td></tr>';
@@ -442,6 +455,8 @@ function describeChangePayload(change) {
 
 function renderPendingChanges(pending) {
   const tbody = document.getElementById('pending-changes-tbody');
+  pendingChangesCount = pending.length;
+  updatePendingKPIs();
 
   if (pending.length === 0) {
     tbody.innerHTML = `<tr><td colspan="6">

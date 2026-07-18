@@ -28,6 +28,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--black);disp
 .nav-links a:hover{color:var(--gold)}
 .nav-cta{background:var(--green)!important;color:#fff!important;padding:8px 20px;border-radius:2px;font-size:13px!important;font-weight:600!important;transition:background 0.2s!important}
 .nav-cta:hover{background:var(--green-light)!important}
+.nav-cta-outline{background:transparent!important;border:1px solid var(--green-light)!important}
+.nav-cta-outline:hover{background:rgba(0,128,0,0.15)!important}
 
 /* ── Hero ── */
 #hero{background:var(--black);position:relative;overflow:hidden;min-height:100vh;display:flex;flex-direction:column}
@@ -51,7 +53,16 @@ h1.hero-title .red-accent{color:#ff6666}
 .hero-stat-num{font-family:'Playfair Display',serif;font-size:40px;font-weight:700;color:#fff}
 .hero-stat-num.red{color:#ff6666}
 .hero-stat-label{font-size:13px;color:#777;margin-top:2px}
+.hero-stat-group{display:flex;gap:3rem;align-items:flex-start}
+.hero-stat-divider{width:1px;background:rgba(255,255,255,0.15);align-self:stretch;margin:0 0.5rem}
+.hero-stat-num.hero-stat-primary{font-size:clamp(45px,6vw,60px)}
+.hero-stats{align-items:flex-end}
 
+@media(max-width:768px){
+  .hero-stat-divider{display:none}
+  .hero-stats{flex-direction:column;gap:2rem}
+  .hero-stat-group{gap:1.5rem}
+}
 /* ── Shared section layout ── */
 section{display:flex;flex-direction:column}
 .section-wrapper{max-width:1100px;margin:0 auto;width:100%;padding:80px 2.5rem}
@@ -173,7 +184,10 @@ footer{background:#0a0a08;padding:3rem 2.5rem;border-top:3px solid var(--green)}
 .footer-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff}
 .footer-logo span{color:var(--gold)}
 .footer-tagline{font-size:13px;color:#555;margin-top:6px;max-width:300px;line-height:1.6}
-
+.footer-links{display:flex;flex-direction:column;gap:0.6rem}
+.footer-links-title{font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gray);margin-bottom:0.3rem}
+.footer-links a{font-size:13px;color:#ccc;text-decoration:none;transition:color 0.2s}
+.footer-links a:hover{color:var(--gold)}
 /* ── Toast ── */
 .toast{position:fixed;bottom:2rem;right:2rem;background:var(--green);color:#fff;padding:12px 20px;border-radius:3px;font-size:14px;font-weight:500;transform:translateY(100px);opacity:0;transition:all 0.3s;z-index:9999;max-width:300px}
 .toast.show{transform:translateY(0);opacity:1}

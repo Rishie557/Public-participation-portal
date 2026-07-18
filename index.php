@@ -18,8 +18,9 @@ session_start();
     <div class="nav-logo-mark">SW</div>
     <span class="nav-brand">Sauti ya <span>Wananchi</span></span>
   </div>
-  <div class="nav-links">        
+  <div class="nav-links">       
       <a href="login.html" class="nav-cta">Sign In</a>
+          <a href="login.html?tab=register" class="nav-cta nav-cta-outline">Register</a> 
     
   </div>
 </nav>
@@ -38,16 +39,27 @@ session_start();
     </h1>
     <p class="hero-sub">A citizen-driven platform for public participation, transparency, and accountability.</p>
    
-    <div class="hero-stats">
-      <div>
-        <div class="hero-stat-num">847K</div>
-        <div class="hero-stat-label">Citizens voted this month</div>
-      </div>
-      <div>
-        <div class="hero-stat-num red">23</div>
-        <div class="hero-stat-label">Active policy votes open</div>
-      </div>
+  <div class="hero-stats">
+  <div class="hero-stat-group">
+    <div>
+      <div class="hero-stat-num hero-stat-primary" id="stat-votes">—</div>
+      <div class="hero-stat-label">Total votes cast</div>
     </div>
+  </div>
+
+  <div class="hero-stat-divider"></div>
+
+  <div class="hero-stat-group">
+    <div>
+      <div class="hero-stat-num red" id="stat-bills">—</div>
+      <div class="hero-stat-label">Active policy bills</div>
+    </div>
+    <div>
+      <div class="hero-stat-num" style="color:var(--green-light);" id="stat-passed">—</div>
+      <div class="hero-stat-label">Bills signed into law</div>
+    </div>
+  </div>
+</div>
   </div>
 </section>
 
@@ -55,13 +67,32 @@ session_start();
   <div class="footer-inner">
     <div>
       <div class="footer-logo">Sauti ya <span>Wananchi</span></div>
-      <div class="footer-tagline">A citizen-driven platform for democratic tax policy, transparency, and accountability.</div>
+      <div class="footer-tagline">Built on three pillars: citizen voice, official accountability, and independent oversight.</div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-links-title">Get Started</div>
+      <a href="login.html">Sign In</a>
+      <a href="login.html?tab=register">Register</a>
+      <a href="admin/admin.html">Admin Sign In</a>
     </div>
   </div>
 </footer>
 
 <div class="toast" id="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
+<script>
+  fetch('get_homepage_stats.php')
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('stat-votes').textContent = data.total_votes.toLocaleString();
+      document.getElementById('stat-bills').textContent = data.active_bills.toLocaleString();
+      document.getElementById('stat-passed').textContent = data.passed_bills.toLocaleString();
+    })
+    .catch(() => {
+      document.getElementById('stat-votes').textContent = '0';
+      document.getElementById('stat-bills').textContent = '0';
+      document.getElementById('stat-passed').textContent = '0';
+    });
+</script>
 </body>
 </html>
