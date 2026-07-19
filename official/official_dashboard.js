@@ -1,18 +1,19 @@
 const OFFICIAL_BILLS = [
-  { slug: 'finance-bill-2026', title: 'Finance Bill, 2026', status: 'Signed into Law' },
-  { slug: 'appropriation-bill-2026', title: 'Appropriation Bill, 2026', status: 'Signed into Law' },
-  { slug: 'supp-approp-2026', title: 'Supplementary Appropriation Bill, 2026', status: 'Signed into Law' },
-  { slug: 'division-revenue-2026', title: 'Division of Revenue Bill, 2026', status: 'In Progress' },
-  { slug: 'county-alloc-2026', title: 'County Governments Additional Allocations Bill, 2026', status: 'In Progress' },
-  { slug: 'infra-fund-2026', title: 'National Infrastructure Fund Bill, 2026', status: 'Signed into Law' },
-  { slug: 'food-feed-safety', title: 'Food and Feed Safety Control Coordination Bill', status: 'Signed into Law' },
-  { slug: 'plant-protection', title: 'Plant Protection Bill, 2026', status: 'In Progress' },
-  { slug: 'forest-conservation', title: 'Forest Conservation and Management (Amendment) Bill', status: 'In Progress' },
-  { slug: 'competition-amendment', title: 'Competition (Amendment) Bill, 2026', status: 'In Progress' },
-  { slug: 'procurement-amendment', title: 'Public Procurement and Asset Disposal (Amendment) Bill', status: 'In Progress' },
-  { slug: 'culture-bill', title: 'Culture Bill, 2024', status: 'In Progress' },
-  { slug: 'health-amendment', title: 'Health (Amendment) Bill', status: 'In Progress' },
+  { slug: 'finance-bill-2026', title: 'Finance Bill, 2026', status: 'Signed into Law', group: 'Finance', level: 'national' },
+  { slug: 'appropriation-bill-2026', title: 'Appropriation Bill, 2026', status: 'Signed into Law', group: 'Finance', level: 'national' },
+  { slug: 'supp-approp-2026', title: 'Supplementary Appropriation Bill, 2026', status: 'Signed into Law', group: 'Finance', level: 'national' },
+  { slug: 'division-revenue-2026', title: 'Division of Revenue Bill, 2026', status: 'In Progress', group: 'Finance', level: 'national' },
+  { slug: 'county-alloc-2026', title: 'County Governments Additional Allocations Bill, 2026', status: 'In Progress', group: 'Finance', level: 'national' },
+  { slug: 'infra-fund-2026', title: 'National Infrastructure Fund Bill, 2026', status: 'Signed into Law', group: 'Infrastructure', level: 'national' },
+  { slug: 'food-feed-safety', title: 'Food and Feed Safety Control Coordination Bill', status: 'Signed into Law', group: 'Agriculture', level: 'national' },
+  { slug: 'plant-protection', title: 'Plant Protection Bill, 2026', status: 'In Progress', group: 'Agriculture', level: 'national' },
+  { slug: 'forest-conservation', title: 'Forest Conservation and Management (Amendment) Bill', status: 'In Progress', group: 'Environment', level: 'national' },
+  { slug: 'competition-amendment', title: 'Competition (Amendment) Bill, 2026', status: 'In Progress', group: 'Trade', level: 'national' },
+  { slug: 'procurement-amendment', title: 'Public Procurement and Asset Disposal (Amendment) Bill', status: 'In Progress', group: 'Procurement', level: 'national' },
+  { slug: 'culture-bill', title: 'Culture Bill, 2024', status: 'In Progress', group: 'Culture', level: 'national' },
+  { slug: 'health-amendment', title: 'Health (Amendment) Bill', status: 'In Progress', group: 'Health', level: 'national' },
 ];
+
 // ── Tab switching ──────────────────────────────────────────
 const OFFICIAL_TABS = ['bills', 'propose', 'reviews'];
 const loadedTabs = new Set();
@@ -32,6 +33,61 @@ function switchOfficialTab(tab) {
   }
 }
 
+// ── Stats row ────────────────────────────────────────────────
+let billCountsData = {};
+let myProposalsData = null;
+
+function updateOfficialStats() {
+  const docketCount = OFFICIAL_BILLS.filter(b => (billCountsData[b.slug] || {}).in_docket).length;
+  const votesTotal = OFFICIAL_BILLS.reduce((sum, b) => {
+    const c = billCountsData[b.slug];
+    return sum + (c && c.in_docket ? (c.total || 0) : 0);
+  }, 0);
+  const docketEl = document.getElementById('stat-docket-count');
+  const votesEl = document.getElementById('stat-votes-count');
+  if (docketEl) docketEl.textContent = docketCount;
+  if (votesEl) votesEl.textContent = votesTotal.toLocaleString();
+}
+
+function updatePendingStat() {
+  const el = document.getElementById('stat-pending-count');
+  if (!el || !Array.isArray(myProposalsData)) return;
+  const pendingCount = myProposalsData.filter(p => p.status === 'pending').length;
+  el.textContent = pendingCount;
+}
+
+// ── Bills grid: search + docket split ─────────────────────────
+function filterOfficialBills() {
+  const q = document.getElementById('bills-search-input').value;
+  renderBillsSection(q);
+}
+
+function renderBillsSection(filterText = '') {
+  const container = document.getElementById('official-bills-container');
+  const q = filterText.trim().toLowerCase();
+  const visible = OFFICIAL_BILLS.filter(b => !q || b.title.toLowerCase().includes(q));
+
+  const docketBills = visible.filter(b => (billCountsData[b.slug] || {}).in_docket);
+  const otherBills = visible.filter(b => !(billCountsData[b.slug] || {}).in_docket);
+
+  let html = '<div class="official-section-title">📋 Your Docket</div>';
+  html += docketBills.length
+    ? `<div class="vote-grid">${docketBills.map(b => renderBillCard(b, billCountsData[b.slug])).join('')}</div>`
+    : `<div class="official-empty-state"><div class="official-empty-icon">📋</div><div class="official-empty-text">No docket bills match your search.</div></div>`;
+
+  html += '<div class="official-section-title official-section-title-muted">All Other Bills</div>';
+  html += otherBills.length
+    ? `<div class="vote-grid">${otherBills.map(b => renderBillCard(b, billCountsData[b.slug])).join('')}</div>`
+    : `<div class="official-empty-state"><div class="official-empty-icon">🔍</div><div class="official-empty-text">No other bills match your search.</div></div>`;
+
+  container.innerHTML = html;
+
+  OFFICIAL_BILLS.forEach(bill => {
+    const btn = document.getElementById(`manage-toggle-${bill.slug}`);
+    if (btn) btn.addEventListener('click', () => toggleManagePanel(bill.slug));
+  });
+}
+
 // ── Pending Reviews ─────────────────────────────────────────
 async function loadPendingReviews() {
   const panel = document.getElementById('tab-panel-reviews');
@@ -46,12 +102,20 @@ async function loadPendingReviews() {
       return;
     }
 
-    if (!Array.isArray(proposals) || proposals.length === 0) {
-      panel.innerHTML = '<p class="no-comments">You haven\'t submitted any proposals yet.</p>';
+    myProposalsData = Array.isArray(proposals) ? proposals : [];
+    updatePendingStat();
+
+    if (myProposalsData.length === 0) {
+      panel.innerHTML = `
+        <div class="official-empty-state">
+          <div class="official-empty-icon">✅</div>
+          <div class="official-empty-text">Nothing pending right now.</div>
+          <div class="official-empty-sub">Try proposing a bill or a tax and spend update.</div>
+        </div>`;
       return;
     }
 
-    panel.innerHTML = proposals.map(renderProposalItem).join('');
+    panel.innerHTML = myProposalsData.map(renderProposalItem).join('');
   } catch (err) {
     panel.innerHTML = '<p style="color:#bb0000;">Could not load proposals.</p>';
     console.error(err);
@@ -90,9 +154,10 @@ function renderProposalItem(p) {
     </div>
   `;
 }
+
 async function loadOfficialBills() {
-  const grid = document.getElementById('official-bills-grid');
-  grid.innerHTML = '<p style="color:#888;">Loading...</p>';
+  const container = document.getElementById('official-bills-container');
+  container.innerHTML = '<p style="color:#888;">Loading...</p>';
 
   try {
     const res = await fetch('get_official_dashboard.php', {
@@ -103,35 +168,40 @@ async function loadOfficialBills() {
 
     if (!res.ok) {
       const errBody = await res.json().catch(() => ({}));
-      grid.innerHTML = `<p style="color:#bb0000;">${errBody.error || 'Could not load results.'}</p>`;
+      container.innerHTML = `<p style="color:#bb0000;">${errBody.error || 'Could not load results.'}</p>`;
       return;
     }
 
-    const data = await res.json();
-    grid.innerHTML = OFFICIAL_BILLS.map(bill => renderBillCard(bill, data[bill.slug])).join('');
-
-    OFFICIAL_BILLS.forEach(bill => {
-      const btn = document.getElementById(`manage-toggle-${bill.slug}`);
-      if (btn) btn.addEventListener('click', () => toggleManagePanel(bill.slug));
-    });
+    billCountsData = await res.json();
+    renderBillsSection();
+    updateOfficialStats();
   } catch (err) {
-    grid.innerHTML = '<p style="color:#bb0000;">Could not load results.</p>';
+    container.innerHTML = '<p style="color:#bb0000;">Could not load results.</p>';
     console.error(err);
   }
 }
+
 function renderBillCard(bill, counts) {
-  counts = counts || { yes: 0, no: 0, total: 0, yes_pct: 0, no_pct: 0, in_docket: false };
+  counts = counts || { yes: 0, no: 0, total: 0, yes_pct: 0, no_pct: 0, in_docket: false, comment_count: 0 };
+  const commentCount = counts.comment_count || 0;
+  const commentLabel = commentCount === 1 ? '1 comment' : `${commentCount} comments`;
   const badgeClass = bill.status === 'Signed into Law' ? 'badge-closed' : 'badge-open';
   const badgeIcon = bill.status === 'Signed into Law' ? '✅' : '🕒';
   const docketTag = counts.in_docket
     ? `<span class="vote-badge badge-open" style="margin-left:8px;">📋 Your Docket</span>`
+    : '';
+  const groupTag = bill.group
+    ? `<span class="vote-badge badge-group" style="margin-left:8px;">${escapeHtml(bill.group)}</span>`
+    : '';
+  const levelTag = bill.level
+    ? `<span class="vote-badge badge-closed" style="margin-left:8px;">${bill.level === 'national' ? '🏛️ National' : '📍 County'}</span>`
     : '';
 
   return `
     <div class="vote-card">
       <div class="vote-card-header">
         <div class="vote-card-meta">
-          <div class="vote-badge ${badgeClass}">${badgeIcon} ${bill.status}</div>${docketTag}
+          <div class="vote-badge ${badgeClass}">${badgeIcon} ${bill.status}</div>${docketTag}${groupTag}${levelTag}
           <div class="vote-card-title">${bill.title}</div>
         </div>
       </div>
@@ -149,7 +219,7 @@ function renderBillCard(bill, counts) {
       </div>
       <div class="vote-card-footer">
         <span class="vote-count"><strong>${counts.total.toLocaleString()}</strong> votes cast</span>
-        <button class="btn-vote btn-vote-yes" id="manage-toggle-${bill.slug}">View Comments →</button>
+        <button class="btn-vote btn-comments-toggle" id="manage-toggle-${bill.slug}">${commentLabel}</button>
       </div>
       <div class="comments-section" id="manage-panel-${bill.slug}" style="display:none;" data-in-docket="${counts.in_docket}"></div>
     </div>
@@ -234,6 +304,7 @@ async function submitOfficialResponse(slug) {
     showToast(err.message, true);
   }
 }
+
 async function loadModerationComments(slug, inDocket) {
   const list = document.getElementById(`moderate-list-${slug}`);
   try {
@@ -241,7 +312,11 @@ async function loadModerationComments(slug, inDocket) {
     const comments = await res.json();
 
     if (!Array.isArray(comments) || comments.length === 0) {
-      list.innerHTML = '<p class="no-comments">No comments on this bill yet.</p>';
+      list.innerHTML = `
+        <div class="official-empty-state" style="padding:20px;">
+          <div class="official-empty-icon" style="font-size:24px;">💬</div>
+          <div class="official-empty-text" style="font-size:13px;">No comments on this bill yet.</div>
+        </div>`;
       return;
     }
 
@@ -284,7 +359,7 @@ async function flagComment(commentId, slug) {
     if (!res.ok || result.error) throw new Error(result.error || 'Action failed.');
 
     showToast('Comment flagged for admin review.');
-    loadModerationComments(slug, true); // this official reached the Flag button, so they're in-docket
+    loadModerationComments(slug, true);
   } catch (err) {
     showToast(err.message, true);
   }
@@ -305,8 +380,10 @@ function showToast(msg, isError = false) {
   setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-document.addEventListener('DOMContentLoaded', loadOfficialBills);
-
+document.addEventListener('DOMContentLoaded', () => {
+  loadOfficialBills();
+  loadPendingReviews();
+});
 
 function renderNewBillPanel() {
   const panel = document.getElementById('tab-panel-propose');

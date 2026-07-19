@@ -187,24 +187,37 @@
               <div class="field-hint">Not shown publicly. An admin cross-checks this before your account is marked verified.</div>
             </div>
 
-            <div class="field-row" id="official-extra-fields" style="display:none">
-              <div class="field">
-                <label class="field-label" for="reg-position">Position / title</label>
-                <input class="field-input" id="reg-position" type="text" placeholder="e.g. MP, MCA, Clerk">
-              </div>
-              <div class="field">
-                <label class="field-label" for="reg-gov-level">Government level</label>
-                <select class="field-select" id="reg-gov-level">
-                  <option value="">Select level</option>
-                  <option value="national">National</option>
-                  <option value="county">County</option>
-                </select>
-              </div>
+            <div class="field" id="official-level-field" style="display:none">
+              <label class="field-label" for="reg-gov-level">Government level</label>
+              <select class="field-select" id="reg-gov-level" onchange="onGovLevelChange()">
+                <option value="">Select level</option>
+                <option value="national">National</option>
+                <option value="county">County</option>
+              </select>
+            </div>
+
+            <div class="field" id="official-position-field" style="display:none">
+              <label class="field-label" for="reg-position">Position / title</label>
+              <select class="field-select" id="reg-position" onchange="onPositionChange()" disabled>
+                <option value="">Select government level first</option>
+              </select>
             </div>
 
             <div class="field" id="official-dept-field" style="display:none">
-              <label class="field-label" for="reg-department">Office / department</label>
-              <input class="field-input" id="reg-department" type="text" placeholder="e.g. Ministry of Health, Nakuru County Assembly">
+              <label class="field-label" for="reg-department">Ministry / docket</label>
+              <select class="field-select" id="reg-department">
+                <option value="">Select your ministry / docket</option>
+                <option value="Finance">Finance</option>
+                <option value="Infrastructure">Infrastructure</option>
+                <option value="Agriculture">Agriculture</option>
+                <option value="Environment">Environment</option>
+                <option value="Trade">Trade</option>
+                <option value="Procurement">Procurement</option>
+                <option value="Culture">Culture</option>
+                <option value="Health">Health</option>
+                <option value="All" style="display:none">All</option>
+              </select>
+              <div class="field-hint">This determines which bills appear in your docket for official responses and comment moderation.</div>
             </div>
 
             <div class="field">

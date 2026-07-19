@@ -35,24 +35,19 @@ async function doLogin() {
   }
 }
 
-// ── SESSION CHECK ───────────────────────────────────────────
-// If the admin is already logged in (e.g. they hit this page directly,
-// or hit Back), skip the form and go straight to the panel.
-async function checkLoginSession() {
-  try {
-    const res = await fetch('admin_check_session.php');
-    const result = await res.json();
-    if (result.logged_in) {
-      window.location.href = 'admin.html';
-    }
-  } catch (err) {
-    console.error('Session check failed:', err);
-  }
+// ── CLEAR FIELDS ON SHOW ─────────────────────────────────────
+// The browser's back/forward cache can restore previously typed values.
+// Always start with a clean, empty form.
+function clearLoginForm() {
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-pass').type = 'password';
+  const showBtn = document.querySelector('.show-password-btn');
+  if (showBtn) showBtn.textContent = 'SHOW';
 }
 
-checkLoginSession();
+clearLoginForm();
 
-// Re-check when restored from bfcache (e.g. navigating Back from admin.html)
-window.addEventListener('pageshow', function (event) {
-  if (event.persisted) checkLoginSession();
+window.addEventListener('pageshow', function () {
+  clearLoginForm();
 });

@@ -30,6 +30,42 @@ if ($role === 'official' && (!$office_id || !$position_title || !$government_lev
     exit;
 }
 
+// Only these exact values are accepted for an official's ministry/docket.
+// This must match the visible <option> values in login.html and the $billGroups map in get_official_dashboard.php.
+$SPECIFIC_DEPARTMENTS = ['Finance', 'Infrastructure', 'Agriculture', 'Environment', 'Trade', 'Procurement', 'Culture', 'Health'];
+
+// Positions must match login.js's NATIONAL_POSITIONS / COUNTY_POSITIONS exactly.
+$NATIONAL_POSITIONS = ['President', 'Deputy President', 'Cabinet Secretary', 'Member of Parliament (MP)', 'Senator', 'Clerk (National Assembly/Senate)'];
+$COUNTY_POSITIONS = ['Governor', 'Deputy Governor', 'County Executive Committee Member (CECM)', 'Member of County Assembly (MCA)', 'County Clerk'];
+$MINISTRY_POSITIONS = ['Cabinet Secretary', 'County Executive Committee Member (CECM)'];
+
+if ($role === 'official') {
+    if (!in_array($government_level, ['national', 'county'], true)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Please select a valid government level.']);
+        exit;
+    }
+
+    $validPositionsForLevel = $government_level === 'national' ? $NATIONAL_POSITIONS : $COUNTY_POSITIONS;
+    if (!in_array($position_title, $validPositionsForLevel, true)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Please select a valid position for the chosen government level.']);
+        exit;
+    }
+
+    $isMinistryPosition = in_array($position_title, $MINISTRY_POSITIONS, true);
+    if ($isMinistryPosition && !in_array($office_department, $SPECIFIC_DEPARTMENTS, true)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Please select a valid ministry/docket from the list.']);
+        exit;
+    }
+    if (!$isMinistryPosition && $office_department !== 'All') {
+        // Non-ministry positions (chief executives, legislators, clerks) always get the "All" docket —
+        // never trust a client-submitted single-ministry value for these roles.
+        $office_department = 'All';
+    }
+}
+
 $stmt = $conn->prepare("SELECT id FROM roles WHERE name = ?");
 $stmt->bind_param('s', $role);
 $stmt->execute();

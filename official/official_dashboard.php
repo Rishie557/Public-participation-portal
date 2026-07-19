@@ -29,23 +29,39 @@
   <div class="section-wrapper">
     <div class="section-eyebrow">Official Access</div>
     <h2 class="section-title">Bill Results &amp; Docket</h2>
-    <p class="section-sub">You can view results for every bill. Bills in your docket also let you post an official response and moderate citizen comments.</p>
+   <p class="section-sub">You can view results for every bill. Bills in your docket also let you post an official response and moderate citizen comments.</p>
 
-    <div class="official-tabs">
-      <button class="official-tab active" data-tab="bills" onclick="switchOfficialTab('bills')">📋 Bills &amp; Docket</button>
-      <button class="official-tab" data-tab="propose" onclick="switchOfficialTab('propose')">➕ Propose New Bill</button>
-      <button class="official-tab" data-tab="reviews" onclick="switchOfficialTab('reviews')">🕒 Pending Reviews</button>
-    </div>
-
-    <div class="official-tab-panel active" id="tab-panel-bills">
-      <div class="vote-grid" id="official-bills-grid"></div>
-    </div>
-
-    <div class="official-tab-panel" id="tab-panel-propose"></div>
-
-    <div class="official-tab-panel" id="tab-panel-reviews"></div>
-
+<div class="official-stats-row">
+  <div class="official-stat-card">
+    <div class="official-stat-label">Bills in Your Docket</div>
+    <div class="official-stat-value" id="stat-docket-count">—</div>
   </div>
+  <div class="official-stat-card">
+    <div class="official-stat-label">Pending Proposals</div>
+    <div class="official-stat-value" id="stat-pending-count">—</div>
+  </div>
+  <div class="official-stat-card">
+    <div class="official-stat-label">Votes Across Your Bills</div>
+    <div class="official-stat-value" id="stat-votes-count">—</div>
+  </div>
+</div>
+
+<div class="official-tabs">
+  <button class="official-tab active" data-tab="bills" onclick="switchOfficialTab('bills')">📋 Bills &amp; Docket</button>
+  <button class="official-tab" data-tab="propose" onclick="switchOfficialTab('propose')">➕ Propose New Bill</button>
+  <button class="official-tab" data-tab="reviews" onclick="switchOfficialTab('reviews')">🕒 Pending Reviews</button>
+</div>
+
+<div class="official-tab-panel active" id="tab-panel-bills">
+  <div class="official-bills-toolbar">
+    <input type="text" id="bills-search-input" class="comment-input" placeholder="Search bills..." oninput="filterOfficialBills()" style="max-width:260px;" />
+  </div>
+  <div id="official-bills-container"></div>
+</div>
+
+<div class="official-tab-panel" id="tab-panel-propose"></div>
+
+<div class="official-tab-panel" id="tab-panel-reviews"></div> 
 </section>
 
 <div class="toast" id="toast"></div>

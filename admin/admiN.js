@@ -319,8 +319,9 @@ function showToast(msg, isError = false) {
 }
 
 // ── SESSION GUARD ─────────────────────────────────────────
-// This page assumes the admin is already logged in. If there's no valid
-// session (direct link, expired session, etc.), bounce to the login page.
+// This page requires an active login session. If there isn't one (expired,
+// logged out, direct link, or navigated back to after logging out), send
+// the admin back to the login page.
 function initPanel() {
   document.getElementById('admin-panel').style.display = 'block';
   loadReports();
@@ -331,7 +332,7 @@ function initPanel() {
 
 async function checkSession() {
   try {
-    const res = await fetch('admin_check_session.php');
+    const res = await fetch('../auth/admin_check_session.php');
     const result = await res.json();
     if (result.logged_in) {
       initPanel();
@@ -346,7 +347,8 @@ async function checkSession() {
 
 checkSession();
 
-// Re-check whenever this page is restored from the back/forward cache
+// Re-check whenever this page is restored from the back/forward cache,
+// e.g. pressing Back after logging out.
 window.addEventListener('pageshow', function (event) {
   if (event.persisted) checkSession();
 });

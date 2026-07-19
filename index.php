@@ -73,7 +73,7 @@ session_start();
       <div class="footer-links-title">Get Started</div>
       <a href="login.html">Sign In</a>
       <a href="login.html?tab=register">Register</a>
-      <a href="admin/admin.html">Admin Sign In</a>
+      <a href="admin/admin_login.html">Admin Sign In</a>
     </div>
   </div>
 </footer>

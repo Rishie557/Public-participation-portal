@@ -4,13 +4,84 @@ function switchTab(which){
   document.getElementById('panel-signin').classList.toggle('active', which==='signin');
   document.getElementById('panel-register').classList.toggle('active', which==='register');
 }
+// Positions available at each government level.
+const NATIONAL_POSITIONS = [
+  'President',
+  'Deputy President',
+  'Cabinet Secretary',
+  'Member of Parliament (MP)',
+  'Senator',
+  'Clerk (National Assembly/Senate)'
+];
+const COUNTY_POSITIONS = [
+  'Governor',
+  'Deputy Governor',
+  'County Executive Committee Member (CECM)',
+  'Member of County Assembly (MCA)',
+  'County Clerk'
+];
+// Positions that hold a single ministry/docket and must pick one.
+const MINISTRY_POSITIONS = ['Cabinet Secretary', 'County Executive Committee Member (CECM)'];
+// Everyone else (chief executives, legislators, clerks) oversees/serves all bills at their level.
+const ALL_DOCKET_VALUE = 'All';
+
 function onRoleChange(){
   const role = document.querySelector('input[name="reg-role"]:checked').value;
   const showOfficial = role === 'official';
   document.getElementById('official-id-field').style.display = showOfficial ? 'block' : 'none';
-  document.getElementById('official-extra-fields').style.display = showOfficial ? 'grid' : 'none';
-  document.getElementById('official-dept-field').style.display = showOfficial ? 'block' : 'none';
+  document.getElementById('official-level-field').style.display = showOfficial ? 'block' : 'none';
+  document.getElementById('official-position-field').style.display = showOfficial ? 'block' : 'none';
+  document.getElementById('official-dept-field').style.display = 'none';
   document.getElementById('gov-note').classList.toggle('show', showOfficial);
+
+  // Reset the cascade whenever role changes
+  document.getElementById('reg-gov-level').value = '';
+  resetPositionField();
+  document.getElementById('reg-department').value = '';
+}
+
+function resetPositionField(){
+  const positionSelect = document.getElementById('reg-position');
+  positionSelect.innerHTML = '<option value="">Select government level first</option>';
+  positionSelect.disabled = true;
+}
+
+function onGovLevelChange(){
+  const level = document.getElementById('reg-gov-level').value;
+  const positionSelect = document.getElementById('reg-position');
+  const deptField = document.getElementById('official-dept-field');
+  const deptSelect = document.getElementById('reg-department');
+
+  const positions = level === 'national' ? NATIONAL_POSITIONS
+                   : level === 'county'   ? COUNTY_POSITIONS
+                   : [];
+
+  positionSelect.innerHTML = '<option value="">Select your position</option>' +
+    positions.map(p => `<option value="${p}">${p}</option>`).join('');
+  positionSelect.disabled = positions.length === 0;
+
+  // Changing level invalidates whatever ministry/docket state was set for the old level
+  deptField.style.display = 'none';
+  deptSelect.value = '';
+}
+
+function onPositionChange(){
+  const position = document.getElementById('reg-position').value;
+  const deptField = document.getElementById('official-dept-field');
+  const deptSelect = document.getElementById('reg-department');
+
+  if (MINISTRY_POSITIONS.includes(position)) {
+    // Cabinet Secretary / CECM: holds one ministry, must pick it
+    deptField.style.display = 'block';
+    deptSelect.value = '';
+  } else if (position) {
+    // Chief executives, legislators, clerks: oversee/serve all dockets at their level
+    deptField.style.display = 'none';
+    deptSelect.value = ALL_DOCKET_VALUE;
+  } else {
+    deptField.style.display = 'none';
+    deptSelect.value = '';
+  }
 }
 function togglePass(id, btn){
   const input = document.getElementById(id);
