@@ -14,8 +14,8 @@ const OFFICIAL_BILLS = [
   { slug: 'health-amendment', title: 'Health (Amendment) Bill', status: 'In Progress', group: 'Health', level: 'national' },
 ];
 
-// ── Tab switching ──────────────────────────────────────────
-const OFFICIAL_TABS = ['bills', 'propose', 'reviews'];
+// ── Tab switching (top-level: Bills / Propose / Reviews / Budget) ────
+const OFFICIAL_TABS = ['bills', 'propose', 'reviews', 'budget'];
 const loadedTabs = new Set();
 
 function switchOfficialTab(tab) {
@@ -30,6 +30,9 @@ function switchOfficialTab(tab) {
   }
   if (tab === 'reviews') {
     loadPendingReviews();
+  }
+  if (tab === 'budget') {
+    renderBudgetPanel();
   }
 }
 
@@ -181,6 +184,7 @@ async function loadOfficialBills() {
   }
 }
 
+// ── Bill card: slim vote line + kebab menu for Remove ──
 function renderBillCard(bill, counts) {
   counts = counts || { yes: 0, no: 0, total: 0, yes_pct: 0, no_pct: 0, in_docket: false, comment_count: 0 };
   const commentCount = counts.comment_count || 0;
@@ -197,6 +201,15 @@ function renderBillCard(bill, counts) {
     ? `<span class="vote-badge badge-closed" style="margin-left:8px;">${bill.level === 'national' ? '🏛️ National' : '📍 County'}</span>`
     : '';
 
+  const kebabHtml = counts.in_docket ? `
+    <div style="position:relative;">
+      <button class="card-kebab-btn" id="kebab-btn-${bill.slug}" onclick="toggleKebabMenu('${bill.slug}', event)">⋮</button>
+      <div class="card-kebab-menu" id="kebab-menu-${bill.slug}" style="display:none;">
+        <button onclick="confirmRemoveBill('${bill.slug}')">🗑️ Propose Removing Bill</button>
+      </div>
+    </div>
+  ` : '';
+
   return `
     <div class="vote-card">
       <div class="vote-card-header">
@@ -205,25 +218,45 @@ function renderBillCard(bill, counts) {
           <div class="vote-card-title">${bill.title}</div>
         </div>
       </div>
-      <div class="vote-card-body">
-        <div class="vote-bar-row">
-          <span class="vote-bar-label yes">Approve</span>
-          <div class="vote-bar-track"><div class="vote-bar-fill fill-yes" style="width:${counts.yes_pct}%"></div></div>
-          <span class="vote-bar-pct">${counts.yes_pct}%</span>
-        </div>
-        <div class="vote-bar-row">
-          <span class="vote-bar-label no">Reject</span>
-          <div class="vote-bar-track"><div class="vote-bar-fill fill-no" style="width:${counts.no_pct}%"></div></div>
-          <span class="vote-bar-pct">${counts.no_pct}%</span>
-        </div>
-      </div>
+      <div class="vote-card-body" style="padding:5px 1.25rem 0;">
+  <div style="display:flex;align-items:center;justify-content:space-between;font-size:11.5px;margin-bottom:4px;">
+    <span><span style="color:#4caf50;font-weight:600;">${counts.yes_pct}%</span> <span style="color:#999;">Approve</span></span>
+    <span><span style="color:#e06666;font-weight:600;">${counts.no_pct}%</span> <span style="color:#999;">Reject</span></span>
+  </div>
+  <div style="display:flex;height:4px;border-radius:2px;overflow:hidden;background:rgba(255,255,255,0.08);">
+    <div style="width:${counts.yes_pct}%;background:#4caf50;"></div>
+    <div style="width:${counts.no_pct}%;background:#e06666;"></div>
+  </div>
+</div>
       <div class="vote-card-footer">
         <span class="vote-count"><strong>${counts.total.toLocaleString()}</strong> votes cast</span>
-        <button class="btn-vote btn-comments-toggle" id="manage-toggle-${bill.slug}">${commentLabel}</button>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <button class="btn-vote btn-comments-toggle" id="manage-toggle-${bill.slug}">${commentLabel}</button>
+          ${kebabHtml}
+        </div>
       </div>
       <div class="comments-section" id="manage-panel-${bill.slug}" style="display:none;" data-in-docket="${counts.in_docket}"></div>
     </div>
   `;
+}
+
+function toggleKebabMenu(slug, e) {
+  e.stopPropagation();
+  document.querySelectorAll('.card-kebab-menu').forEach(m => {
+    if (m.id !== `kebab-menu-${slug}`) m.style.display = 'none';
+  });
+  const menu = document.getElementById(`kebab-menu-${slug}`);
+  if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+document.addEventListener('click', () => {
+  document.querySelectorAll('.card-kebab-menu').forEach(m => m.style.display = 'none');
+});
+
+function confirmRemoveBill(slug) {
+  const menu = document.getElementById(`kebab-menu-${slug}`);
+  if (menu) menu.style.display = 'none';
+  submitRemoveBill(slug);
 }
 
 function toggleManagePanel(slug) {
@@ -233,52 +266,81 @@ function toggleManagePanel(slug) {
   if (!isOpen) renderManagePanel(slug);
 }
 
+// ── Manage panel: Response / Comments only (Tax/Spend moved to Budget
+//    tab, Remove moved to card kebab menu). ──
+let manageTabStylesInjected = false;
+function injectManageTabStyles() {
+  if (manageTabStylesInjected) return;
+  manageTabStylesInjected = true;
+  const style = document.createElement('style');
+  style.textContent = `
+    .manage-tabs { display:flex; gap:4px; border-bottom:1px solid var(--gray-light); margin-bottom:14px; padding-bottom:8px; flex-wrap:wrap; }
+    .manage-tab-btn { background:#fff; border:1px solid var(--gray-light); color:var(--gray); font-size:12.5px; font-weight:600; padding:6px 12px; border-radius:16px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .15s; }
+    .manage-tab-btn:hover { border-color:#b8d8b8; color:var(--green); }
+    .manage-tab-btn.active { background:var(--green-pale); border-color:#b8d8b8; color:var(--green); }
+    .manage-tab-btn.manage-tab-danger.active { background:var(--red-pale); border-color:#dbb8b8; color:var(--red); }
+    .manage-tab-badge { display:inline-block; background:var(--gray-light); color:var(--gray); font-size:11px; font-weight:700; padding:0 6px; border-radius:8px; margin-left:4px; }
+    .manage-tab-panel { display:none; }
+  `;
+  document.head.appendChild(style);
+}
+
+const manageActiveTab = {};
+
 function renderManagePanel(slug) {
   const panel = document.getElementById(`manage-panel-${slug}`);
   const inDocket = panel.dataset.inDocket === 'true';
 
+  if (!inDocket) {
+    panel.innerHTML = `
+      <div class="official-panel-section">
+        <h4 class="comments-title">💬 Citizen Comments</h4>
+        <div class="comment-list" id="moderate-list-${slug}"><p class="comment-loading">Loading comments...</p></div>
+      </div>
+    `;
+    loadModerationComments(slug, false);
+    return;
+  }
+
+  injectManageTabStyles();
+  const activeTab = manageActiveTab[slug] || 'response';
+
   panel.innerHTML = `
-    ${inDocket ? `
-      <div class="official-panel-section">
-        <h4 class="comments-title">📢 Post Official Response</h4>
-        <div class="comment-form">
-          <textarea class="comment-input" id="response-input-${slug}" placeholder="Write an official statement on this bill..."></textarea>
-          <button class="comment-submit-btn" onclick="submitOfficialResponse('${slug}')">Post Response</button>
-        </div>
-      </div>
+    <div class="manage-tabs">
+      <button class="manage-tab-btn" data-tab="response" onclick="switchManageTab('${slug}','response')">📢 Response</button>
+      <button class="manage-tab-btn" data-tab="comments" onclick="switchManageTab('${slug}','comments')">🛡️ Comments<span class="manage-tab-badge" id="comments-badge-${slug}">…</span></button>
+    </div>
 
-      <div class="official-panel-section">
-        <h4 class="comments-title">✏️ Propose Tax/Spend Update</h4>
-        <div class="official-field-row">
-          <div class="official-field-group" style="max-width:100px;">
-            <label class="official-field-label">Year</label>
-            <input class="comment-input" type="number" id="tax-year-${slug}" placeholder="2026" />
-          </div>
-          <div class="official-field-group" style="max-width:150px;">
-            <label class="official-field-label">Amount</label>
-            <input class="comment-input" type="number" step="0.01" id="tax-amount-${slug}" placeholder="0.00" />
-          </div>
-          <div class="official-field-group" style="flex:2;">
-            <label class="official-field-label">Notes (optional)</label>
-            <input class="comment-input" id="tax-notes-${slug}" placeholder="Notes" />
-          </div>
-          <button class="comment-submit-btn" onclick="submitTaxSpendChange('${slug}')">Submit for Review</button>
-        </div>
+    <div class="manage-tab-panel" data-tab-panel="response">
+      <div class="comment-form">
+        <textarea class="comment-input" id="response-input-${slug}" placeholder="Write an official statement on this bill..."></textarea>
+        <button class="comment-submit-btn" onclick="submitOfficialResponse('${slug}')">Post Response</button>
       </div>
+    </div>
 
-      <div class="official-panel-section official-danger-section">
-        <h4 class="comments-title">🗑️ Remove This Bill</h4>
-        <p class="official-danger-note">This will archive the bill from the citizen site only after an admin approves the request.</p>
-        <button class="comment-submit-btn" style="background:var(--red);" onclick="submitRemoveBill('${slug}')">Propose Removing This Bill</button>
-      </div>
-    ` : ''}
-
-    <div class="official-panel-section">
-      <h4 class="comments-title">${inDocket ? '🛡️ Moderate Citizen Comments' : '💬 Citizen Comments'}</h4>
+    <div class="manage-tab-panel" data-tab-panel="comments">
       <div class="comment-list" id="moderate-list-${slug}"><p class="comment-loading">Loading comments...</p></div>
     </div>
   `;
-  loadModerationComments(slug, inDocket);
+
+  applyManageTab(slug, activeTab);
+  loadModerationComments(slug, true);
+}
+
+function switchManageTab(slug, tab) {
+  manageActiveTab[slug] = tab;
+  applyManageTab(slug, tab);
+}
+
+function applyManageTab(slug, tab) {
+  const panel = document.getElementById(`manage-panel-${slug}`);
+  if (!panel) return;
+  panel.querySelectorAll('.manage-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  panel.querySelectorAll('.manage-tab-panel').forEach(p => {
+    p.style.display = p.dataset.tabPanel === tab ? 'block' : 'none';
+  });
 }
 
 async function submitOfficialResponse(slug) {
@@ -305,11 +367,15 @@ async function submitOfficialResponse(slug) {
   }
 }
 
+// ── Comment list ──
 async function loadModerationComments(slug, inDocket) {
   const list = document.getElementById(`moderate-list-${slug}`);
   try {
     const res = await fetch(`get_official_comments.php?bill_slug=${encodeURIComponent(slug)}`);
     const comments = await res.json();
+
+    const badge = document.getElementById(`comments-badge-${slug}`);
+    if (badge && Array.isArray(comments)) badge.textContent = comments.length;
 
     if (!Array.isArray(comments) || comments.length === 0) {
       list.innerHTML = `
@@ -323,14 +389,17 @@ async function loadModerationComments(slug, inDocket) {
     list.innerHTML = comments.map(c => {
       const isPending = c.status === 'pending_deletion';
       return `
-        <div class="comment-item" style="${isPending ? 'opacity:0.6;' : ''}">
-          <div class="comment-header">
-            <span class="comment-author">${escapeHtml(c.name)}</span>
-            <span class="comment-time">${c.time}${isPending ? ' · Pending admin review' : ''}</span>
+        <div class="comment-item" style="${isPending ? 'opacity:0.6;' : ''}border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 12px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+            <span class="comment-author" style="font-size:13px;">${escapeHtml(c.name)}</span>
+            <span class="comment-time" style="font-size:11px;color:#888;">${c.time}${isPending ? ' · Pending admin review' : ''}</span>
           </div>
-          <div class="comment-body">${escapeHtml(c.text)}</div>
+          <div class="comment-body" style="font-size:13px;margin-bottom:${inDocket && !isPending ? '8px' : '0'};">${escapeHtml(c.text)}</div>
           ${inDocket && !isPending
-            ? `<button class="comment-submit-btn" style="margin-top:6px;background:var(--red);" onclick="flagComment(${c.id}, '${slug}')">Flag for deletion</button>`
+            ? `<div style="display:flex;gap:6px;justify-content:flex-end;">
+                 <button style="font-size:12px;padding:5px 10px;border-radius:14px;border:1px solid rgba(76,175,80,0.4);background:rgba(76,175,80,0.12);color:#7ed17e;cursor:pointer;" id="useful-btn-${c.id}" onclick="markUseful(${c.id})">👍 Useful</button>
+                 <button style="font-size:12px;padding:5px 10px;border-radius:14px;border:1px solid rgba(224,102,102,0.4);background:rgba(224,102,102,0.12);color:#e88a8a;cursor:pointer;" onclick="flagComment(${c.id}, '${slug}')">🚩 Flag</button>
+               </div>`
             : ''
           }
         </div>
@@ -365,6 +434,40 @@ async function flagComment(commentId, slug) {
   }
 }
 
+async function markUseful(commentId) {
+  const btn = document.getElementById(`useful-btn-${commentId}`);
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Marking...';
+  }
+
+  try {
+    const res = await fetch('mark_useful.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ comment_id: commentId })
+    });
+    const result = await res.json();
+    if (!res.ok || result.error) throw new Error(result.error || 'Action failed.');
+
+    if (result.already_marked) {
+      showToast('Already marked as useful.');
+    } else {
+      showToast('✓ Commenter notified that their input was useful.');
+    }
+
+    if (btn) {
+      btn.textContent = '✓ Marked useful';
+    }
+  } catch (err) {
+    showToast(err.message, true);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '👍 Useful';
+    }
+  }
+}
+
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
@@ -394,6 +497,10 @@ function renderNewBillPanel() {
       <input class="comment-input" id="new-bill-title" placeholder="Title" />
       <input class="comment-input" id="new-bill-status" placeholder="Status label (e.g. In Progress)" />
       <input class="comment-input" id="new-bill-group" placeholder="Group label (e.g. Health)" />
+      <div class="official-field-group">
+        <label class="official-field-label">Bill Document (PDF, required)</label>
+        <input class="comment-input" type="file" id="new-bill-document" accept="application/pdf" style="padding:10px 12px;" />
+      </div>
       <button class="comment-submit-btn" onclick="submitNewBill()">Submit for Admin Review</button>
     </div>
   `;
@@ -404,17 +511,38 @@ async function submitNewBill() {
   const title = document.getElementById('new-bill-title').value.trim();
   const bill_status = document.getElementById('new-bill-status').value.trim();
   const group_label = document.getElementById('new-bill-group').value.trim();
+  const fileInput = document.getElementById('new-bill-document');
+  const file = fileInput.files[0] || null;
 
   if (!slug || !title || !bill_status) {
     showToast('Slug, title, and status are required.', true);
     return;
   }
 
+  if (!file) {
+    showToast('Please attach the bill document (PDF).', true);
+    return;
+  }
+
+  if (file.type !== 'application/pdf') {
+    showToast('Only PDF files are accepted.', true);
+    return;
+  }
+
+  if (file.size > 15 * 1024 * 1024) {
+    showToast('File is too large (max 15MB).', true);
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('change_type', 'add_bill');
+  formData.append('payload', JSON.stringify({ slug, title, bill_status, group_label }));
+  formData.append('document', file);
+
   try {
     const res = await fetch('propose_change.php', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ change_type: 'add_bill', payload: { slug, title, bill_status, group_label } })
+      body: formData
     });
     const result = await res.json();
     if (!res.ok || result.error) throw new Error(result.error || 'Could not submit.');
@@ -424,9 +552,48 @@ async function submitNewBill() {
     document.getElementById('new-bill-title').value = '';
     document.getElementById('new-bill-status').value = '';
     document.getElementById('new-bill-group').value = '';
+    fileInput.value = '';
   } catch (err) {
     showToast(err.message, true);
   }
+}
+
+// ── Budget tab: Tax/Spend updates for all docket bills in one place ──
+function renderBudgetPanel() {
+  const panel = document.getElementById('tab-panel-budget');
+  const docketBills = OFFICIAL_BILLS.filter(b => (billCountsData[b.slug] || {}).in_docket);
+
+  if (docketBills.length === 0) {
+    panel.innerHTML = `
+      <div class="official-empty-state">
+        <div class="official-empty-icon">💰</div>
+        <div class="official-empty-text">No bills in your docket yet.</div>
+        <div class="official-empty-sub">Tax/Spend updates apply to bills in your docket.</div>
+      </div>`;
+    return;
+  }
+
+  panel.innerHTML = `<h4 class="comments-title" style="margin-bottom:1rem;">✏️ Tax / Spend Updates</h4>` +
+    docketBills.map(b => `
+      <div class="official-panel-section">
+        <div style="font-weight:700;font-family:'Playfair Display',serif;font-size:15px;margin-bottom:10px;">${escapeHtml(b.title)}</div>
+        <div class="official-field-row">
+          <div class="official-field-group" style="max-width:100px;">
+            <label class="official-field-label">Year</label>
+            <input class="comment-input" type="number" id="tax-year-${b.slug}" placeholder="2026" />
+          </div>
+          <div class="official-field-group" style="max-width:150px;">
+            <label class="official-field-label">Amount</label>
+            <input class="comment-input" type="number" step="0.01" id="tax-amount-${b.slug}" placeholder="0.00" />
+          </div>
+          <div class="official-field-group" style="flex:2;">
+            <label class="official-field-label">Notes (optional)</label>
+            <input class="comment-input" id="tax-notes-${b.slug}" placeholder="Notes" />
+          </div>
+          <button class="comment-submit-btn" onclick="submitTaxSpendChange('${b.slug}')">Submit for Review</button>
+        </div>
+      </div>
+    `).join('');
 }
 
 async function submitTaxSpendChange(slug) {

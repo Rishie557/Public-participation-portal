@@ -58,6 +58,41 @@
   .dash-year-menu a:hover{background:rgba(0,153,0,0.15);color:#fff}
   .dash-year-menu a + a{border-top:1px solid rgba(255,255,255,0.06)}
   body.big-text .dash-year-menu a{font-size:16px;padding:12px 18px}
+
+  /* ── Notification bell ── */
+  .notif-bell-wrap{position:relative}
+  .notif-bell-btn{
+    background:none;border:none;font-size:20px;cursor:pointer;
+    position:relative;color:#ddd;padding:4px 8px;line-height:1;
+  }
+  .notif-badge{
+    position:absolute;top:-2px;right:0;background:#c0392b;color:#fff;
+    font-size:10px;font-weight:700;border-radius:10px;padding:1px 5px;
+    min-width:16px;text-align:center;line-height:1.4;
+  }
+  .notif-panel{
+    display:none;position:absolute;top:calc(100% + 10px);right:0;
+    width:320px;max-height:420px;overflow-y:auto;background:#1c1c19;
+    border:1px solid rgba(255,255,255,0.1);border-radius:8px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:50;
+  }
+  .notif-panel.open{display:block}
+  .notif-panel-header{
+    padding:12px 16px;font-weight:700;color:#fff;font-size:14px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+    font-family:'DM Sans',sans-serif;
+  }
+  .notif-item{
+    padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.06);
+    font-size:13px;color:#ccc;
+  }
+  .notif-item:last-child{border-bottom:none}
+  .notif-item.unread{background:rgba(0,153,0,0.08)}
+  .notif-item-type{font-weight:600;font-size:12px;margin-bottom:4px}
+  .notif-item-type.deleted{color:#e06666}
+  .notif-item-type.appreciated{color:var(--green-light,#4caf50)}
+  .notif-item-time{font-size:11px;color:#888;margin-top:4px}
+  .notif-empty{padding:20px;text-align:center;color:#888;font-size:13px}
 </style>
 </head>
 <body>
@@ -68,6 +103,15 @@
     <span class="nav-brand">Sauti ya <span>Wananchi</span></span>
   </div>
   <div class="nav-links">
+    <div class="notif-bell-wrap">
+      <button class="notif-bell-btn" id="notif-bell-btn" onclick="toggleNotifPanel()" aria-label="Notifications">
+        🔔<span class="notif-badge" id="notif-badge" style="display:none">0</span>
+      </button>
+      <div class="notif-panel" id="notif-panel">
+        <div class="notif-panel-header">Notifications</div>
+        <div class="notif-panel-list" id="notif-panel-list"><p class="notif-empty">Loading…</p></div>
+      </div>
+    </div>
     <span class="nav-account-name">Hi, <?= htmlspecialchars($_SESSION['full_name']) ?></span>
     <a href="../auth/logout.php" class="nav-logout">Log out</a>
   </div>
@@ -95,9 +139,9 @@
       <div class="dash-label">BILLS</div>
       <div class="dash-sub">Miswada / Read new laws</div>
       <div class="dash-year-menu" id="bills-menu" onclick="event.stopPropagation()">
-        <a href="../bills/Bills2026.html">2026 BILLS</a>
-        <a href="../bills/Bills2025.html">2025 BILLS</a>
-        <a href="../bills/Bills2024.html">2024 BILLS</a>
+        <a href="bills/Bills2026.php">2026 BILLS</a>
+        <a href="bills/Bills2025.html">2025 BILLS</a>
+        <a href="bills/Bills2024.html">2024 BILLS</a>
       </div>
     </div>
 
@@ -108,9 +152,9 @@
       <div class="dash-label">TRANSPARENCY</div>
       <div class="dash-sub">Matumizi / Track spending</div>
       <div class="dash-year-menu" id="spend-menu" onclick="event.stopPropagation()">
-        <a href="../spend/Spend2026.html">2026 SPEND</a>
-        <a href="../spend/Spend2025.html">2025 SPEND</a>
-        <a href="../spend/Spend2024.html">2024 SPEND</a>
+        <a href="spend/Spend2026.php">2026 SPEND</a>
+        <a href="spend/Spend2025.html">2025 SPEND</a>
+        <a href="spend/Spend2024.html">2024 SPEND</a>
       </div>
     </div>
 
@@ -233,7 +277,92 @@ document.addEventListener('click', (e) => {
   if (!e.target.closest('.dash-card-picker')) {
     document.querySelectorAll('.dash-year-menu.open').forEach(m => m.classList.remove('open'));
   }
+  if (!e.target.closest('.notif-bell-wrap')) {
+    document.querySelectorAll('.notif-panel.open').forEach(p => p.classList.remove('open'));
+  }
 });
+
+// ── Notifications ──────────────────────────────────────────
+function escapeNotif(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function updateNotifBadge(count){
+  const badge = document.getElementById('notif-badge');
+  if (!badge) return;
+  if (count > 0) {
+    badge.style.display = 'inline-block';
+    badge.textContent = count > 9 ? '9+' : count;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+async function loadNotifBadge(){
+  try {
+    const res = await fetch('get_notifications.php');
+    if (!res.ok) return;
+    const data = await res.json();
+    updateNotifBadge(data.unread_count || 0);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function renderNotifItem(n){
+  const isDeleted = n.type === 'comment_deleted';
+  const label = isDeleted ? '🗑️ Comment removed' : '👍 Marked as useful';
+  const typeClass = isDeleted ? 'deleted' : 'appreciated';
+  const time = new Date(n.created_at).toLocaleString('en-KE', {
+    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+  });
+  return `
+    <div class="notif-item ${n.is_read ? '' : 'unread'}">
+      <div class="notif-item-type ${typeClass}">${label}</div>
+      <div>${escapeNotif(n.message)}</div>
+      <div class="notif-item-time">${time}</div>
+    </div>
+  `;
+}
+
+async function loadNotifList(){
+  const list = document.getElementById('notif-panel-list');
+  list.innerHTML = '<p class="notif-empty">Loading…</p>';
+  try {
+    const res = await fetch('get_notifications.php');
+    const data = await res.json();
+    const notifications = data.notifications || [];
+
+    list.innerHTML = notifications.length
+      ? notifications.map(renderNotifItem).join('')
+      : '<p class="notif-empty">No notifications yet.</p>';
+
+    if ((data.unread_count || 0) > 0) {
+      fetch('mark_notifications_read.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      updateNotifBadge(0);
+    }
+  } catch (err) {
+    list.innerHTML = '<p class="notif-empty">Could not load notifications.</p>';
+    console.error(err);
+  }
+}
+
+function toggleNotifPanel(){
+  const panel = document.getElementById('notif-panel');
+  const isOpen = panel.classList.contains('open');
+  document.querySelectorAll('.notif-panel.open').forEach(p => p.classList.remove('open'));
+  if (isOpen) return;
+  panel.classList.add('open');
+  loadNotifList();
+}
+
+loadNotifBadge();
 </script>
 </body>
 </html>

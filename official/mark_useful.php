@@ -29,8 +29,6 @@ if (!$is_admin) {
 
 $data = json_decode(file_get_contents('php://input'), true);
 $comment_id = (int)($data['comment_id'] ?? 0);
-$action = $data['action'] ?? '';
-$reason = trim($data['reason'] ?? '');
 
 if (!$comment_id) {
     http_response_code(400);
@@ -38,7 +36,7 @@ if (!$comment_id) {
     exit;
 }
 
-$lookup = $conn->prepare("SELECT bill_slug, status FROM comments WHERE id = ?");
+$lookup = $conn->prepare("SELECT bill_slug, status, user_id FROM comments WHERE id = ?");
 $lookup->bind_param('i', $comment_id);
 $lookup->execute();
 $row = $lookup->get_result()->fetch_assoc();
@@ -50,49 +48,38 @@ if (!$row) {
     exit;
 }
 
+if ($row['status'] !== 'active') {
+    http_response_code(409);
+    echo json_encode(['error' => 'This comment is not active.']);
+    exit;
+}
+
 if (!$is_admin && !officialOwnsBill($conn, $user_id, $row['bill_slug'])) {
     http_response_code(403);
     echo json_encode(['error' => 'This bill is not in your docket.']);
     exit;
 }
 
-if ($is_admin) {
-    // Admins act immediately, no review needed
-    $new_status = $action === 'unhide' ? 'active' : 'deleted';
-    $stmt = $conn->prepare("UPDATE comments SET status = ? WHERE id = ?");
-    $stmt->bind_param('si', $new_status, $comment_id);
-    $stmt->execute();
-    $stmt->close();
-    $conn->close();
-    echo json_encode(['success' => true, 'status' => $new_status]);
+if (empty($row['user_id'])) {
+    echo json_encode(['success' => true, 'notified' => false]);
     exit;
 }
 
-// Official: flagging only, requires reason, goes to pending review
-if ($action !== 'flag') {
-    http_response_code(400);
-    echo json_encode(['error' => 'Officials must flag comments for admin review.']);
-    exit;
-}
+$message = "An official from the docket for \"{$row['bill_slug']}\" found your comment useful. Thank you for your input.";
 
-if ($reason === '') {
-    http_response_code(400);
-    echo json_encode(['error' => 'A reason is required to flag a comment.']);
-    exit;
-}
-
-if ($row['status'] !== 'active') {
-    http_response_code(409);
-    echo json_encode(['error' => 'This comment is already pending review or has been removed.']);
-    exit;
-}
-
-$stmt = $conn->prepare(
-    "UPDATE comments SET status = 'pending_deletion', flagged_by = ?, flagged_reason = ?, flagged_at = NOW() WHERE id = ?"
+$notif = $conn->prepare(
+    "INSERT IGNORE INTO notifications (user_id, comment_id, type, message, bill_slug)
+     VALUES (?, ?, 'comment_appreciated', ?, ?)"
 );
-$stmt->bind_param('isi', $user_id, $reason, $comment_id);
-$stmt->execute();
-$stmt->close();
+$notif->bind_param('iiss', $row['user_id'], $comment_id, $message, $row['bill_slug']);
+$notif->execute();
+$wasInserted = $notif->affected_rows > 0;
+$notif->close();
 $conn->close();
 
-echo json_encode(['success' => true, 'status' => 'pending_deletion']);
+if (!$wasInserted) {
+    echo json_encode(['success' => true, 'notified' => false, 'already_marked' => true]);
+    exit;
+}
+
+echo json_encode(['success' => true, 'notified' => true]);

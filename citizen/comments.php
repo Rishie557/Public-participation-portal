@@ -16,8 +16,6 @@
     <span class="nav-brand">Sauti ya <span>Wananchi</span></span>
   </div>
   <div class="nav-links">
-    <a href="Votes.php">Vote 2026</a>
-    <a href="comments.php" class="nav-cta">Comments</a>
     <div class="nav-account">
       <span class="nav-account-name">Hi, <?= htmlspecialchars($_SESSION['full_name']) ?></span>
       <a href="../auth/logout.php" class="nav-logout">Log out</a>

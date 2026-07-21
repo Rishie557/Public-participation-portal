@@ -46,9 +46,9 @@ $payload = json_decode($change['payload'], true);
 
 if ($change['change_type'] === 'add_bill') {
     $stmt = $conn->prepare(
-        "INSERT INTO bills (slug, title, bill_status, group_label) VALUES (?, ?, ?, ?)"
+        "INSERT INTO bills (slug, title, bill_status, group_label, document_path) VALUES (?, ?, ?, ?, ?)"
     );
-    $stmt->bind_param('ssss', $payload['slug'], $payload['title'], $payload['bill_status'], $payload['group_label']);
+    $stmt->bind_param('ssss', $payload['slug'], $payload['title'], $payload['bill_status'], $payload['group_label'], $document_path);
     $stmt->execute();
     $stmt->close();
 

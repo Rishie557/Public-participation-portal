@@ -442,8 +442,11 @@ const CHANGE_TYPE_LABELS = {
 function describeChangePayload(change) {
   const p = change.payload || {};
   if (change.change_type === 'add_bill') {
+    const docLink = p.document_path
+      ? `<br><a href="/sauti/${escapeHTML(p.document_path)}" target="_blank" style="font-size:11px;font-weight:600;color:var(--green);text-decoration:none;">📄 View attached document</a>`
+      : '';
     return `<strong>${escapeHTML(p.title || '')}</strong><br>
-      <span style="font-size:11px;color:var(--gray)">slug: ${escapeHTML(p.slug || '')} · ${escapeHTML(p.bill_status || '')} · ${escapeHTML(p.group_label || '—')}</span>`;
+      <span style="font-size:11px;color:var(--gray)">slug: ${escapeHTML(p.slug || '')} · ${escapeHTML(p.bill_status || '')} · ${escapeHTML(p.group_label || '—')}</span>${docLink}`;
   }
   if (change.change_type === 'edit_tax_spend') {
     return `Year: <strong>${escapeHTML(String(p.year ?? ''))}</strong> · Amount: <strong>${escapeHTML(String(p.amount ?? ''))}</strong>

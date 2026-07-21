@@ -16,7 +16,6 @@
     <span class="nav-brand">Sauti ya <span>Wananchi</span></span>
   </div>
   <div class="nav-links">
-    <a href="../Votes.php">Vote 2026</a>
     <a href="official_dashboard.php" class="nav-cta">Official Dashboard</a>
     <div class="nav-account">
       <span class="nav-account-name">Hi, <?= htmlspecialchars($_SESSION['full_name']) ?> (<?= htmlspecialchars($_SESSION['role']) ?>)</span>
@@ -46,10 +45,12 @@
   </div>
 </div>
 
+
 <div class="official-tabs">
   <button class="official-tab active" data-tab="bills" onclick="switchOfficialTab('bills')">📋 Bills &amp; Docket</button>
   <button class="official-tab" data-tab="propose" onclick="switchOfficialTab('propose')">➕ Propose New Bill</button>
   <button class="official-tab" data-tab="reviews" onclick="switchOfficialTab('reviews')">🕒 Pending Reviews</button>
+<button class="official-tab" data-tab="budget" onclick="switchOfficialTab('budget')">Budget</button>
 </div>
 
 <div class="official-tab-panel active" id="tab-panel-bills">
@@ -62,6 +63,7 @@
 <div class="official-tab-panel" id="tab-panel-propose"></div>
 
 <div class="official-tab-panel" id="tab-panel-reviews"></div> 
+<div class="official-tab-panel" id="tab-panel-budget"></div>
 </section>
 
 <div class="toast" id="toast"></div>

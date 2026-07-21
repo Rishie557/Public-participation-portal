@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 session_start();
 require __DIR__ . '/../config/db_connect.php';
+require __DIR__ . '/../includes/docket_helpers.php';
 
 if (empty($_SESSION['user_id']) || empty($_SESSION['role']) || !in_array($_SESSION['role'], ['official', 'admin'], true)) {
     http_response_code(403);
@@ -36,18 +37,10 @@ if (!$bill_slug || mb_strlen($response_text) < 5) {
     exit;
 }
 
-if (!$is_admin) {
-    $check = $conn->prepare("SELECT 1 FROM official_dockets WHERE user_id = ? AND bill_slug = ?");
-    $check->bind_param('is', $user_id, $bill_slug);
-    $check->execute();
-    $owns = $check->get_result()->num_rows > 0;
-    $check->close();
-
-    if (!$owns) {
-        http_response_code(403);
-        echo json_encode(['error' => 'This bill is not in your docket.']);
-        exit;
-    }
+if (!$is_admin && !officialOwnsBill($conn, $user_id, $bill_slug)) {
+    http_response_code(403);
+    echo json_encode(['error' => 'This bill is not in your docket.']);
+    exit;
 }
 
 $stmt = $conn->prepare("INSERT INTO official_responses (bill_slug, user_id, response_text, created_at) VALUES (?, ?, ?, NOW())");

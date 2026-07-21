@@ -57,7 +57,7 @@ $_SESSION['full_name'] = $user['full_name'];
 echo json_encode([
     'success'  => true,
     'role'     => $user['role_name'],
-    'redirect' => $user['role_name'] === 'official' ? 'official_dashboard.php' : 'dashboard.php'
+    'redirect' => $user['role_name'] === 'official' ? 'official/official_dashboard.php' : 'citizen/dashboard.php'
 ]);
 
 $conn->close();

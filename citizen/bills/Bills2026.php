@@ -1,3 +1,46 @@
+<?php
+require __DIR__ . '/../../config/db_connect.php';
+
+// These 13 slugs already have hand-written, richly-detailed cards below
+// (vote counts, sources, Swahili narration). Any other active bill in the
+// `bills` table — e.g. one an official proposed and an admin approved —
+// gets a simpler auto-generated card in the "Recently Added" section
+// instead, so it isn't silently missing from this page.
+$curatedSlugs = [
+    'finance-bill-2026', 'appropriation-bill-2026', 'supp-approp-2026',
+    'division-revenue-2026', 'county-alloc-2026', 'infra-fund-2026',
+    'food-feed-safety', 'plant-protection', 'forest-conservation',
+    'competition-amendment', 'procurement-amendment', 'culture-bill',
+    'health-amendment',
+];
+
+$newBills = [];
+$result = $conn->query(
+    "SELECT slug, title, bill_status, group_label, document_path
+     FROM bills
+     WHERE status = 'active'
+     ORDER BY group_label, id"
+);
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        if (!in_array($row['slug'], $curatedSlugs, true)) {
+            $newBills[] = $row;
+        }
+    }
+}
+$conn->close();
+
+function billsStageClass($status) {
+    $s = strtolower($status);
+    if (strpos($s, 'sign') !== false || strpos($s, 'passed') !== false || strpos($s, 'law') !== false) {
+        return ['card-passed', 'stage-assent'];
+    }
+    if (strpos($s, 'reject') !== false || strpos($s, 'fail') !== false) {
+        return ['card-rejected', 'stage-rejected'];
+    }
+    return ['card-pending', 'stage-pending'];
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,6 +98,8 @@
     }
     .card-listen-btn.speaking { background: #27ae60; color: #fff; }
 
+    .pw-empty-note { font-size: 0.85rem; color: #999; padding: 8px 4px 20px; }
+
     @media (max-width: 600px) { .pw-vote-header { flex-direction: column; } }
   </style>
 </head>
@@ -77,6 +122,7 @@
   <button class="bills-tab" onclick="scrollToBillsGroup('group-agri')">Agriculture</button>
   <button class="bills-tab" onclick="scrollToBillsGroup('group-gov')">Governance</button>
   <button class="bills-tab" onclick="scrollToBillsGroup('group-health')">Health</button>
+  <button class="bills-tab" onclick="scrollToBillsGroup('group-new')">New</button>
 </div>
 
 <!-- ═══════════════════════════════════════ -->
@@ -294,6 +340,35 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════ -->
+<div class="section-label" id="group-new">Recently Added</div>
+<!-- ═══════════════════════════════════════ -->
+<?php if (empty($newBills)): ?>
+  <p class="pw-empty-note">No newly proposed bills yet.</p>
+<?php else: foreach ($newBills as $b):
+    [$cardClass, $stageClass] = billsStageClass($b['bill_status']);
+    $safeTitle  = htmlspecialchars($b['title'], ENT_QUOTES, 'UTF-8');
+    $safeStatus = htmlspecialchars($b['bill_status'], ENT_QUOTES, 'UTF-8');
+    $safeGroup  = htmlspecialchars($b['group_label'] ?: '—', ENT_QUOTES, 'UTF-8');
+    $docPath    = !empty($b['document_path']) ? htmlspecialchars($b['document_path'], ENT_QUOTES, 'UTF-8') : null;
+?>
+<div class="pw-vote-card <?= $cardClass ?>">
+  <div class="pw-vote-header">
+    <div>
+      <div class="pw-vote-title"><?= $safeTitle ?></div>
+      <div class="pw-vote-meta"><?= $safeGroup ?> · Added via official docket review</div>
+    </div>
+    <span class="pw-bill-stage <?= $stageClass ?>"><?= $safeStatus ?></span>
+  </div>
+  <button class="card-listen-btn" onclick="readBillCard(this)">🔊 Listen</button>
+  <div class="pw-vote-footer">
+    <span class="pw-vote-footnote">Status: <?= $safeStatus ?></span>
+    <?php if ($docPath): ?>
+      <a href="/sauti/<?= $docPath ?>" target="_blank" class="pw-source-link">📄 View bill document ↗</a>
+    <?php endif; ?>
+  </div>
+</div>
+<?php endforeach; endif; ?>
 <script>
 let billsKiswahili = false;
 let billsSelectedVoice = null;

@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 session_start();
 require __DIR__ . '/../config/db_connect.php';
+require __DIR__ . '/../includes/docket_helpers.php';
 
 if (empty($_SESSION['user_id']) || empty($_SESSION['role']) || !in_array($_SESSION['role'], ['official', 'admin'], true)) {
     http_response_code(403);
@@ -29,42 +30,6 @@ if (!$is_admin) {
 $data = json_decode(file_get_contents('php://input'), true);
 $slugs = $data['slugs'] ?? [];
 
-// Server-side bill -> group/level mapping (kept here, not trusted from the client,
-// since in_docket controls real permissions like posting responses and moderating comments).
-$billGroups = [
-    'finance-bill-2026'       => 'Finance',
-    'appropriation-bill-2026' => 'Finance',
-    'supp-approp-2026'        => 'Finance',
-    'division-revenue-2026'   => 'Finance',
-    'county-alloc-2026'       => 'Finance',
-    'infra-fund-2026'         => 'Infrastructure',
-    'food-feed-safety'        => 'Agriculture',
-    'plant-protection'        => 'Agriculture',
-    'forest-conservation'     => 'Environment',
-    'competition-amendment'   => 'Trade',
-    'procurement-amendment'   => 'Procurement',
-    'culture-bill'            => 'Culture',
-    'health-amendment'        => 'Health',
-];
-
-// All current bills are national-level (passed by the National Assembly/Senate),
-// including the ones about county allocations — none are county-assembly bills yet.
-$billLevels = [
-    'finance-bill-2026'       => 'national',
-    'appropriation-bill-2026' => 'national',
-    'supp-approp-2026'        => 'national',
-    'division-revenue-2026'   => 'national',
-    'county-alloc-2026'       => 'national',
-    'infra-fund-2026'         => 'national',
-    'food-feed-safety'        => 'national',
-    'plant-protection'        => 'national',
-    'forest-conservation'     => 'national',
-    'competition-amendment'   => 'national',
-    'procurement-amendment'   => 'national',
-    'culture-bill'            => 'national',
-    'health-amendment'        => 'national',
-];
-
 $officialDepartment = null;
 $officialLevel = null;
 if (!$is_admin) {
@@ -77,16 +42,8 @@ if (!$is_admin) {
     $officialLevel = $deptRow['government_level'] ?? null;
 }
 
-function departmentMatchesGroup(?string $department, ?string $group): bool {
-    if (!$department || !$group) return false;
-    if ($department === 'All') return true;
-    return $department === $group;
-}
-
-function levelMatches(?string $officialLevel, ?string $billLevel): bool {
-    if (!$officialLevel || !$billLevel) return false;
-    return $officialLevel === $billLevel;
-}
+$billGroups = $GLOBALS['billGroups'];
+$billLevels = $GLOBALS['billLevels'];
 
 $results = [];
 foreach ($slugs as $slug) {

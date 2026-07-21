@@ -1,4 +1,44 @@
 <?php require __DIR__ . '/../auth/auth_gate.php'; ?>
+<?php
+require __DIR__ . '/../auth/auth_gate.php';
+require __DIR__ . '/../config/db_connect.php';
+
+// These 13 slugs already have hand-written cards below. Any other active
+// bill in the `bills` table (e.g. one an official proposed and an admin
+// approved) gets an auto-generated card in "Recently Added" instead.
+$curatedSlugs = [
+    'finance-bill-2026', 'appropriation-bill-2026', 'supp-approp-2026',
+    'division-revenue-2026', 'county-alloc-2026', 'infra-fund-2026',
+    'food-feed-safety', 'plant-protection', 'forest-conservation',
+    'competition-amendment', 'procurement-amendment', 'culture-bill',
+    'health-amendment',
+];
+
+$newBills = [];
+$result = $conn->query(
+    "SELECT slug, title, bill_status, group_label, document_path
+     FROM bills
+     WHERE status = 'active'
+     ORDER BY id"
+);
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        if (!in_array($row['slug'], $curatedSlugs, true)) {
+            $newBills[] = $row;
+        }
+    }
+}
+$conn->close();
+
+function voteBadgeClass($status) {
+    $s = strtolower($status);
+    if (strpos($s, 'sign') !== false || strpos($s, 'passed') !== false || strpos($s, 'law') !== false) {
+        return ['badge-closed', '✅'];
+    }
+    return ['badge-open', '🕒'];
+}
+?>
+<!DOCTYPE html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,32 +55,6 @@
     <div class="nav-logo-mark">SW</div>
     <span class="nav-brand">Sauti ya <span>Wananchi</span></span>
   </div>
-  <div class="nav-links">
-     <div class="dropdown">
-    <button class="dropbtn">VOTE</button>
-    <div class="dropdown-content">
-    <a href="Votes.php">Vote 2026</a>
-    </div>
-    </div>
-    <div class="dropdown">
-    <button class="dropbtn">TRANSPARENCY </button>
-    <div class="dropdown-content">
-        <a href="../spend/Spend2024.html">2024 SPEND</a>
-        <a href="../spend/Spend2025.html">2025 SPEND</a>
-        <a href="../spend/Spend2026.html">2026 SPEND</a>
-    </div>
-</div>
-    <div class="dropdown">
-    <button class="dropbtn">BILLS</button>
-    <div class="dropdown-content">
-        <a href="../bills/Bills2024.html">Bills 2024</a>
-        <a href="../bills/Bills2025.html">Bills 2025</a>
-        <a href="../bills/Bills2026.html">Bills 2026</a>
-    </div>
-</div>
-    <a href="index.php#advocacy">Advocacy</a>
-    <a href="comments.php">Comments</a>
-    <a href="Votes.php" class="nav-cta">Cast Your Vote</a>
     <div class="nav-account">
       <span class="nav-account-name">Hi, <?= htmlspecialchars($_SESSION['full_name']) ?></span>
       <a href="../auth/logout.php" class="nav-logout">Log out</a>
@@ -489,9 +503,56 @@
 
       </div>
     </div>
+<!-- ── RECENTLY ADDED (auto-generated from official proposals) ── -->
+    <?php if (!empty($newBills)): ?>
+    <div class="vote-section-group">
+      <div class="vote-group-label">Recently Added</div>
+      <div class="vote-grid">
+        <?php foreach ($newBills as $b):
+            [$badgeClass, $badgeIcon] = voteBadgeClass($b['bill_status']);
+            $safeSlug   = htmlspecialchars($b['slug'], ENT_QUOTES, 'UTF-8');
+            $safeTitle  = htmlspecialchars($b['title'], ENT_QUOTES, 'UTF-8');
+            $safeStatus = htmlspecialchars($b['bill_status'], ENT_QUOTES, 'UTF-8');
+            $safeGroup  = htmlspecialchars($b['group_label'] ?: 'General', ENT_QUOTES, 'UTF-8');
+            $docPath    = !empty($b['document_path']) ? htmlspecialchars($b['document_path'], ENT_QUOTES, 'UTF-8') : null;
+        ?>
+        <div class="vote-card">
+          <div class="vote-card-header">
+            <div class="vote-card-meta">
+              <div class="vote-badge <?= $badgeClass ?>"><?= $badgeIcon ?> <?= $safeStatus ?></div>
+              <div class="vote-card-title"><?= $safeTitle ?></div>
+              <div class="vote-card-desc"><?= $safeGroup ?> · Added via official docket review.</div>
+            </div>
+          </div>
+          <div class="vote-card-actions">
+            <button class="card-listen-btn" onclick="readCard(this)">🔊 Listen</button>
+            <?php if ($docPath): ?>
+              <a class="card-read-link" href="/sauti/<?= $docPath ?>" target="_blank" rel="noopener">📄 Read the Bill</a>
+            <?php endif; ?>
+          </div>
+          <div class="vote-card-footer">
+            <span class="vote-count"><strong>0</strong> votes cast</span>
+            <div class="vote-btns">
+              <button class="btn-vote btn-vote-yes" onclick="castVote(this,'yes','<?= $safeSlug ?>')">✅ Approve</button>
+              <button class="btn-vote btn-vote-no"  onclick="castVote(this,'no','<?= $safeSlug ?>')">❌ Reject</button>
+            </div>
+          </div>
+          <div class="comments-section" data-bill="<?= $safeSlug ?>">
+            <h4 class="comments-title">💬 Share Your Thoughts</h4>
+            <div class="comment-form">
+              <textarea class="comment-input" placeholder="Share your thoughts on this bill..."></textarea>
+              <button class="comment-submit-btn" onclick="submitComment(this,'<?= $safeSlug ?>')">Post Comment</button>
+            </div>
+            <p class="comment-redirect-note">See what others are saying on the <a href="comments.php">Comments page</a>.</p>
+          </div>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <?php endif; ?>
 
   </div>
-</section>
+  </section>
 
 <footer>
   <div class="footer-inner">
